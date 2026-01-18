@@ -1,8 +1,40 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Upload, Zap, Shield, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+
+const phrases = ["Made Simple", "On Demand", "Done Right", "Made Local"];
 
 const HeroSection = () => {
+  const [displayText, setDisplayText] = useState("");
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentPhrase = phrases[phraseIndex];
+    const typingSpeed = isDeleting ? 50 : 100;
+    const pauseTime = isDeleting ? 50 : 2000;
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        if (displayText.length < currentPhrase.length) {
+          setDisplayText(currentPhrase.slice(0, displayText.length + 1));
+        } else {
+          setTimeout(() => setIsDeleting(true), pauseTime);
+        }
+      } else {
+        if (displayText.length > 0) {
+          setDisplayText(displayText.slice(0, -1));
+        } else {
+          setIsDeleting(false);
+          setPhraseIndex((prev) => (prev + 1) % phrases.length);
+        }
+      }
+    }, typingSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, phraseIndex]);
+
   return (
     <section className="relative min-h-[90vh] flex items-center pt-16 overflow-hidden">
       {/* Background Effects */}
@@ -24,7 +56,8 @@ const HeroSection = () => {
           {/* Headline */}
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-slide-up">
             Manufacturing{" "}
-            <span className="text-gradient">Made Simple</span>
+            <span className="text-gradient">{displayText}</span>
+            <span className="inline-block w-[3px] h-[0.9em] bg-primary ml-1 animate-pulse align-middle" />
           </h1>
 
           {/* Subheadline */}
