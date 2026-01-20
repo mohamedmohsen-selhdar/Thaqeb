@@ -84,32 +84,32 @@ const HeroSection = () => {
 
           {/* Trust Indicators */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: "0.3s" }}>
-            <div className="flex items-center gap-3 justify-center sm:justify-start">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-elevated border border-border">
+            <div className="flex items-center gap-3 justify-center sm:justify-start group cursor-default">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-elevated border border-border transition-all duration-300 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:scale-110">
                 <Clock className="h-5 w-5 text-primary" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-foreground">48h Quotes</p>
+                <p className="text-sm font-medium text-foreground transition-colors duration-300 group-hover:text-primary">48h Quotes</p>
                 <p className="text-xs text-muted-foreground">Fast turnaround</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 justify-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-elevated border border-border">
+            <div className="flex items-center gap-3 justify-center group cursor-default">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-elevated border border-border transition-all duration-300 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:scale-110">
                 <Shield className="h-5 w-5 text-primary" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-foreground">Quality Assured</p>
+                <p className="text-sm font-medium text-foreground transition-colors duration-300 group-hover:text-primary">Quality Assured</p>
                 <p className="text-xs text-muted-foreground">ISO certified</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 justify-center sm:justify-end">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-elevated border border-border">
+            <div className="flex items-center gap-3 justify-center sm:justify-end group cursor-default">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-elevated border border-border transition-all duration-300 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:scale-110">
                 <Zap className="h-5 w-5 text-primary" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-foreground">100+ Workshops</p>
+                <p className="text-sm font-medium text-foreground transition-colors duration-300 group-hover:text-primary">100+ Workshops</p>
                 <p className="text-xs text-muted-foreground">Verified partners</p>
               </div>
             </div>

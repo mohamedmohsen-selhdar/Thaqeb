@@ -86,8 +86,8 @@ const GetQuote = () => {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-xl">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-glow">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-strong group-hover:scale-105">
               <Factory className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display text-xl font-bold text-foreground">
@@ -144,7 +144,7 @@ const GetQuote = () => {
                       </div>
 
                       {/* File Upload Zone */}
-                      <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-xl p-8 text-center transition-all duration-300 hover:border-primary/50 hover:bg-primary/5 hover:shadow-lg hover:shadow-primary/5">
                         <input
                           type="file"
                           id="file-upload"
@@ -175,7 +175,7 @@ const GetQuote = () => {
                           {files.map((file, index) => (
                             <div
                               key={index}
-                              className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                              className="flex items-center justify-between p-3 bg-muted rounded-lg transition-all duration-300 hover:bg-surface-elevated hover:shadow-md group"
                             >
                               <div className="flex items-center gap-3">
                                 <FileText className="h-5 w-5 text-primary" />
@@ -385,7 +385,7 @@ const GetQuote = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <div className="bg-card rounded-2xl border border-border p-6">
+              <div className="bg-card rounded-2xl border border-border p-6 transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
                 <h3 className="font-display font-semibold text-foreground mb-4">
                   What Happens Next?
                 </h3>
@@ -395,17 +395,17 @@ const GetQuote = () => {
                     { icon: Shield, text: "Review and approve quote at no obligation" },
                     { icon: Factory, text: "Production begins after your approval" },
                   ].map((item) => (
-                    <div key={item.text} className="flex gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <div key={item.text} className="flex gap-3 group cursor-default">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
                         <item.icon className="h-4 w-4 text-primary" />
                       </div>
-                      <p className="text-sm text-muted-foreground">{item.text}</p>
+                      <p className="text-sm text-muted-foreground transition-colors duration-300 group-hover:text-foreground">{item.text}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-primary/5 rounded-2xl border border-primary/20 p-6">
+              <div className="bg-primary/5 rounded-2xl border border-primary/20 p-6 transition-all duration-300 hover:bg-primary/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
                 <p className="text-sm text-foreground mb-2 font-medium">
                   Need help?
                 </p>

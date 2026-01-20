@@ -50,13 +50,13 @@ const Register = () => {
               "Real-time order tracking",
               "48-hour quote turnaround",
             ].map((benefit) => (
-              <div key={benefit} className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20">
+              <div key={benefit} className="flex items-center gap-3 group cursor-default">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
                   <svg className="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="text-sm text-foreground">{benefit}</span>
+                <span className="text-sm text-foreground transition-colors duration-300 group-hover:text-primary">{benefit}</span>
               </div>
             ))}
           </div>
@@ -67,8 +67,8 @@ const Register = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-glow">
+          <Link to="/" className="flex items-center gap-2 mb-8 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-strong group-hover:scale-105">
               <Factory className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display text-2xl font-bold text-foreground">
@@ -88,10 +88,10 @@ const Register = () => {
             <button
               type="button"
               onClick={() => setUserType("client")}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                 userType === "client"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
               }`}
             >
               I need parts
@@ -99,10 +99,10 @@ const Register = () => {
             <button
               type="button"
               onClick={() => setUserType("supplier")}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                 userType === "supplier"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
               }`}
             >
               I'm a workshop

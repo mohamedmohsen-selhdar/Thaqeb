@@ -97,28 +97,28 @@ const SupplierDashboard = () => {
         <nav className="flex-1 p-4 space-y-2">
           <Link
             to="/supplier/dashboard"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-all duration-200 hover:bg-primary/20"
           >
             <Wrench className="h-5 w-5" />
             Jobs
           </Link>
           <Link
             to="/supplier/capacity"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Calendar className="h-5 w-5" />
             Capacity
           </Link>
           <Link
             to="/supplier/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Factory className="h-5 w-5" />
             Workshop Profile
           </Link>
           <Link
             to="/supplier/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Settings className="h-5 w-5" />
             Settings
@@ -165,9 +165,9 @@ const SupplierDashboard = () => {
         <main className="flex-1 p-6 overflow-auto">
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
                   <Wrench className="h-5 w-5 text-primary" />
                 </div>
               </div>
@@ -175,9 +175,9 @@ const SupplierDashboard = () => {
               <p className="text-3xl font-bold text-foreground">{activeJobs.length}</p>
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-success/30 hover:shadow-lg hover:shadow-success/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10 transition-all duration-300 group-hover:bg-success/20 group-hover:scale-110">
                   <TrendingUp className="h-5 w-5 text-success" />
                 </div>
               </div>
@@ -185,9 +185,9 @@ const SupplierDashboard = () => {
               <p className="text-3xl font-bold text-foreground">EGP 35,500</p>
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-warning/30 hover:shadow-lg hover:shadow-warning/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10 transition-all duration-300 group-hover:bg-warning/20 group-hover:scale-110">
                   <Star className="h-5 w-5 text-warning" />
                 </div>
               </div>
@@ -198,9 +198,9 @@ const SupplierDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-info/30 hover:shadow-lg hover:shadow-info/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-info/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-info/10 transition-all duration-300 group-hover:bg-info/20 group-hover:scale-110">
                   <Clock className="h-5 w-5 text-info" />
                 </div>
               </div>
@@ -270,7 +270,7 @@ const SupplierDashboard = () => {
               return (
                 <div
                   key={job.id}
-                  className="bg-card rounded-xl border border-border p-6 hover:border-primary/30 transition-colors"
+                  className="bg-card rounded-xl border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex-1">

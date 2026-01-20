@@ -22,8 +22,8 @@ const Login = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-glow">
+          <Link to="/" className="flex items-center gap-2 mb-8 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-strong group-hover:scale-105">
               <Factory className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display text-2xl font-bold text-foreground">
@@ -43,10 +43,10 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setUserType("client")}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                 userType === "client"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
               }`}
             >
               Client
@@ -54,10 +54,10 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setUserType("supplier")}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                 userType === "supplier"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
               }`}
             >
               Supplier
