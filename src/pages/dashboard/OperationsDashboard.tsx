@@ -154,35 +154,35 @@ const OperationsDashboard = () => {
         <nav className="flex-1 p-4 space-y-2">
           <Link
             to="/operations"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-all duration-200 hover:bg-primary/20"
           >
             <LayoutDashboard className="h-5 w-5" />
             Dashboard
           </Link>
           <Link
             to="/operations/orders"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <FileText className="h-5 w-5" />
             All Orders
           </Link>
           <Link
             to="/operations/suppliers"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Users className="h-5 w-5" />
             Suppliers
           </Link>
           <Link
             to="/operations/logistics"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Truck className="h-5 w-5" />
             Logistics
           </Link>
           <Link
             to="/operations/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Settings className="h-5 w-5" />
             Settings
@@ -222,9 +222,9 @@ const OperationsDashboard = () => {
         <main className="flex-1 p-6 overflow-auto">
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-warning/30 hover:shadow-lg hover:shadow-warning/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10 transition-all duration-300 group-hover:bg-warning/20 group-hover:scale-110">
                   <Clock className="h-5 w-5 text-warning" />
                 </div>
               </div>
@@ -232,9 +232,9 @@ const OperationsDashboard = () => {
               <p className="text-3xl font-bold text-foreground">{stats.pending}</p>
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
                   <Package className="h-5 w-5 text-primary" />
                 </div>
               </div>
@@ -242,9 +242,9 @@ const OperationsDashboard = () => {
               <p className="text-3xl font-bold text-foreground">{stats.inProgress}</p>
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-destructive/30 hover:shadow-lg hover:shadow-destructive/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10 transition-all duration-300 group-hover:bg-destructive/20 group-hover:scale-110">
                   <AlertCircle className="h-5 w-5 text-destructive" />
                 </div>
               </div>
@@ -252,9 +252,9 @@ const OperationsDashboard = () => {
               <p className="text-3xl font-bold text-foreground">{stats.qaRequired}</p>
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
+            <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-success/30 hover:shadow-lg hover:shadow-success/5 hover:-translate-y-1 cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10 transition-all duration-300 group-hover:bg-success/20 group-hover:scale-110">
                   <TrendingUp className="h-5 w-5 text-success" />
                 </div>
               </div>
