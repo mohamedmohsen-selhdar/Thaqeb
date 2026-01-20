@@ -1,25 +1,22 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Factory, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Menu, X, Factory } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t, isRTL } = useLanguage();
 
   const isActive = (path: string) => location.pathname === path;
 
   const navLinks = [
-    { path: "/", label: "Home" },
-    { path: "/how-it-works", label: "How It Works" },
-    { path: "/capabilities", label: "Capabilities" },
-    { path: "/for-suppliers", label: "For Suppliers" },
+    { path: "/", label: t.common.home },
+    { path: "/how-it-works", label: t.nav.howItWorks },
+    { path: "/capabilities", label: t.nav.capabilities },
+    { path: "/for-suppliers", label: t.nav.forSuppliers },
   ];
 
   return (
@@ -55,25 +52,29 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSwitcher />
             <Link to="/login">
               <Button variant="ghost" size="sm">
-                Sign In
+                {t.common.signIn}
               </Button>
             </Link>
             <Link to="/get-quote">
               <Button variant="hero" size="sm">
-                Get Instant Quote
+                {t.common.getQuote}
               </Button>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-foreground hover:bg-muted rounded-md"
-          >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 text-foreground hover:bg-muted rounded-md"
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -97,12 +98,12 @@ const Navbar = () => {
               <hr className="border-border my-2" />
               <Link to="/login" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
-                  Sign In
+                  {t.common.signIn}
                 </Button>
               </Link>
               <Link to="/get-quote" onClick={() => setIsOpen(false)}>
                 <Button variant="hero" className="w-full">
-                  Get Instant Quote
+                  {t.common.getQuote}
                 </Button>
               </Link>
             </div>
