@@ -20,8 +20,13 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock,
-  Shield
+  Shield,
+  Sparkles,
+  Loader2
 } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { useDrawingAnalysis, AnalysisResult } from "@/hooks/useDrawingAnalysis";
+import { AIAnalysisCard } from "@/components/quote/AIAnalysisCard";
 
 const processes = [
   "CNC Machining",
@@ -51,6 +56,9 @@ const materials = [
 ];
 
 const GetQuote = () => {
+  const { t, language } = useLanguage();
+  const isRTL = language === "ar";
+  
   const [step, setStep] = useState(1);
   const [files, setFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
@@ -64,21 +72,55 @@ const GetQuote = () => {
     phone: "",
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { isAnalyzing, analysisResult, analyzeDrawing, clearAnalysis } = useDrawingAnalysis();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       setFiles((prev) => [...prev, ...newFiles]);
+      
+      // Automatically analyze the first uploaded file
+      if (newFiles.length > 0 && !analysisResult) {
+        await analyzeDrawing(newFiles[0]);
+      }
     }
   };
 
   const removeFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+    if (files.length === 1) {
+      clearAnalysis();
+    }
+  };
+
+  const handleApplyAnalysis = (analysis: AnalysisResult) => {
+    setFormData((prev) => ({
+      ...prev,
+      process: analysis.suggestedProcess,
+      material: analysis.suggestedMaterial,
+      notes: prev.notes 
+        ? `${prev.notes}\n\n${t.getQuote.additionalNotes}: ${analysis.notes.join(". ")}`
+        : analysis.notes.join(". "),
+    }));
+    setStep(2);
+  };
+
+  const handleReanalyze = async () => {
+    if (files.length > 0) {
+      await analyzeDrawing(files[0]);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Quote request:", { files, ...formData });
+    console.log("Quote request:", { files, ...formData, analysis: analysisResult });
     // TODO: Submit to backend
+  };
+
+  const labels = {
+    analyzeButton: isRTL ? "تحليل بالذكاء الاصطناعي" : "Analyze with AI",
+    analyzing: isRTL ? "جاري التحليل..." : "Analyzing...",
+    reanalyze: isRTL ? "إعادة التحليل" : "Re-analyze",
   };
 
   return (
@@ -97,8 +139,8 @@ const GetQuote = () => {
 
           <Link to="/">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {isRTL ? <ArrowRight className="h-4 w-4 ml-2" /> : <ArrowLeft className="h-4 w-4 mr-2" />}
+              {t.common.backToHome}
             </Button>
           </Link>
         </div>
@@ -120,7 +162,7 @@ const GetQuote = () => {
                   {step > s ? <CheckCircle2 className="h-5 w-5" /> : s}
                 </div>
                 <span className={`hidden sm:block text-sm font-medium ${step >= s ? "text-foreground" : "text-muted-foreground"}`}>
-                  {s === 1 ? "Upload Files" : s === 2 ? "Specifications" : "Contact Info"}
+                  {s === 1 ? t.getQuote.uploadFiles : s === 2 ? t.getQuote.specifications : t.getQuote.contactInfo}
                 </span>
                 {s < 3 && <div className="w-12 h-0.5 bg-border" />}
               </div>
@@ -136,10 +178,10 @@ const GetQuote = () => {
                     <div className="space-y-6 animate-fade-in">
                       <div>
                         <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                          Upload Your Drawings
+                          {t.getQuote.uploadTitle}
                         </h2>
                         <p className="text-muted-foreground">
-                          Upload CAD files, technical drawings, or specifications
+                          {t.getQuote.uploadSubtitle}
                         </p>
                       </div>
 
@@ -161,10 +203,10 @@ const GetQuote = () => {
                             <Upload className="h-8 w-8 text-primary" />
                           </div>
                           <p className="text-foreground font-medium mb-1">
-                            Click to upload or drag and drop
+                            {t.getQuote.uploadHint}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            PDF, DXF, STEP, STL, IGES, DWG (max 50MB each)
+                            {t.getQuote.uploadFormats}
                           </p>
                         </label>
                       </div>
@@ -200,6 +242,48 @@ const GetQuote = () => {
                         </div>
                       )}
 
+                      {/* AI Analysis Loading */}
+                      {isAnalyzing && (
+                        <div className="flex items-center justify-center gap-3 p-6 bg-primary/5 rounded-xl border border-primary/20">
+                          <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                          <p className="text-sm text-foreground font-medium">{labels.analyzing}</p>
+                        </div>
+                      )}
+
+                      {/* AI Analysis Result */}
+                      {analysisResult && !isAnalyzing && (
+                        <div className="space-y-3">
+                          <AIAnalysisCard
+                            analysis={analysisResult}
+                            onApply={handleApplyAnalysis}
+                            isRTL={isRTL}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleReanalyze}
+                            className="w-full"
+                          >
+                            <Sparkles className="h-4 w-4" />
+                            {labels.reanalyze}
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Analyze Button (if files exist but no analysis) */}
+                      {files.length > 0 && !analysisResult && !isAnalyzing && (
+                        <Button
+                          type="button"
+                          variant="outline-primary"
+                          className="w-full"
+                          onClick={() => analyzeDrawing(files[0])}
+                        >
+                          <Sparkles className="h-4 w-4" />
+                          {labels.analyzeButton}
+                        </Button>
+                      )}
+
                       <Button
                         type="button"
                         variant="hero"
@@ -207,8 +291,8 @@ const GetQuote = () => {
                         onClick={() => setStep(2)}
                         disabled={files.length === 0}
                       >
-                        Continue
-                        <ArrowRight className="h-4 w-4" />
+                        {t.common.continue}
+                        {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                       </Button>
                     </div>
                   )}
@@ -217,22 +301,22 @@ const GetQuote = () => {
                     <div className="space-y-6 animate-fade-in">
                       <div>
                         <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                          Specifications
+                          {t.getQuote.specsTitle}
                         </h2>
                         <p className="text-muted-foreground">
-                          Tell us about your manufacturing requirements
+                          {t.getQuote.specsSubtitle}
                         </p>
                       </div>
 
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Manufacturing Process</Label>
+                          <Label>{t.getQuote.manufacturingProcess}</Label>
                           <Select
                             value={formData.process}
                             onValueChange={(v) => setFormData((prev) => ({ ...prev, process: v }))}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select process" />
+                              <SelectValue placeholder={t.getQuote.selectProcess} />
                             </SelectTrigger>
                             <SelectContent>
                               {processes.map((p) => (
@@ -245,13 +329,13 @@ const GetQuote = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Material</Label>
+                          <Label>{t.getQuote.material}</Label>
                           <Select
                             value={formData.material}
                             onValueChange={(v) => setFormData((prev) => ({ ...prev, material: v }))}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select material" />
+                              <SelectValue placeholder={t.getQuote.selectMaterial} />
                             </SelectTrigger>
                             <SelectContent>
                               {materials.map((m) => (
@@ -264,18 +348,18 @@ const GetQuote = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="quantity">Quantity</Label>
+                          <Label htmlFor="quantity">{t.getQuote.quantity}</Label>
                           <Input
                             id="quantity"
                             type="number"
-                            placeholder="e.g., 100"
+                            placeholder={t.getQuote.quantityPlaceholder}
                             value={formData.quantity}
                             onChange={(e) => setFormData((prev) => ({ ...prev, quantity: e.target.value }))}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="deadline">Desired Deadline</Label>
+                          <Label htmlFor="deadline">{t.getQuote.deadline}</Label>
                           <Input
                             id="deadline"
                             type="date"
@@ -286,10 +370,10 @@ const GetQuote = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="notes">Additional Notes</Label>
+                        <Label htmlFor="notes">{t.getQuote.additionalNotes}</Label>
                         <Textarea
                           id="notes"
-                          placeholder="Any special requirements, tolerances, finishes, etc."
+                          placeholder={t.getQuote.notesPlaceholder}
                           value={formData.notes}
                           onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
                           rows={4}
@@ -302,8 +386,8 @@ const GetQuote = () => {
                           variant="outline"
                           onClick={() => setStep(1)}
                         >
-                          <ArrowLeft className="h-4 w-4" />
-                          Back
+                          {isRTL ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+                          {t.common.back}
                         </Button>
                         <Button
                           type="button"
@@ -311,8 +395,8 @@ const GetQuote = () => {
                           className="flex-1"
                           onClick={() => setStep(3)}
                         >
-                          Continue
-                          <ArrowRight className="h-4 w-4" />
+                          {t.common.continue}
+                          {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                         </Button>
                       </div>
                     </div>
@@ -322,26 +406,26 @@ const GetQuote = () => {
                     <div className="space-y-6 animate-fade-in">
                       <div>
                         <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                          Contact Information
+                          {t.getQuote.contactTitle}
                         </h2>
                         <p className="text-muted-foreground">
-                          Where should we send your quote?
+                          {t.getQuote.contactSubtitle}
                         </p>
                       </div>
 
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="companyName">Company Name</Label>
+                          <Label htmlFor="companyName">{t.common.companyName}</Label>
                           <Input
                             id="companyName"
-                            placeholder="Your company name"
+                            placeholder={t.getQuote.companyPlaceholder}
                             value={formData.companyName}
                             onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="email">Email</Label>
+                          <Label htmlFor="email">{t.common.email}</Label>
                           <Input
                             id="email"
                             type="email"
@@ -352,7 +436,7 @@ const GetQuote = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="phone">Phone Number</Label>
+                          <Label htmlFor="phone">{t.common.phone}</Label>
                           <Input
                             id="phone"
                             type="tel"
@@ -369,12 +453,12 @@ const GetQuote = () => {
                           variant="outline"
                           onClick={() => setStep(2)}
                         >
-                          <ArrowLeft className="h-4 w-4" />
-                          Back
+                          {isRTL ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+                          {t.common.back}
                         </Button>
                         <Button type="submit" variant="hero" className="flex-1">
-                          Submit Quote Request
-                          <ArrowRight className="h-4 w-4" />
+                          {t.getQuote.submitQuote}
+                          {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                         </Button>
                       </div>
                     </div>
@@ -387,13 +471,13 @@ const GetQuote = () => {
             <div className="space-y-6">
               <div className="bg-card rounded-2xl border border-border p-6 transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
                 <h3 className="font-display font-semibold text-foreground mb-4">
-                  What Happens Next?
+                  {t.getQuote.whatHappens}
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { icon: Clock, text: "Receive detailed quote within 48 hours" },
-                    { icon: Shield, text: "Review and approve quote at no obligation" },
-                    { icon: Factory, text: "Production begins after your approval" },
+                    { icon: Clock, text: t.getQuote.receiveQuote },
+                    { icon: Shield, text: t.getQuote.reviewQuote },
+                    { icon: Factory, text: t.getQuote.productionBegins },
                   ].map((item) => (
                     <div key={item.text} className="flex gap-3 group cursor-default">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
@@ -407,13 +491,13 @@ const GetQuote = () => {
 
               <div className="bg-primary/5 rounded-2xl border border-primary/20 p-6 transition-all duration-300 hover:bg-primary/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
                 <p className="text-sm text-foreground mb-2 font-medium">
-                  Need help?
+                  {t.getQuote.needHelp}
                 </p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Our team is ready to assist you with your quote request.
+                  {t.getQuote.helpText}
                 </p>
                 <Button variant="outline-primary" size="sm" className="w-full">
-                  Contact Support
+                  {t.getQuote.contactSupport}
                 </Button>
               </div>
             </div>
