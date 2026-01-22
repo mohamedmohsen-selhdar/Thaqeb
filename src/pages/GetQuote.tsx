@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,9 @@ import {
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useDrawingAnalysis, AnalysisResult } from "@/hooks/useDrawingAnalysis";
 import { AIAnalysisCard } from "@/components/quote/AIAnalysisCard";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuoteRequests } from "@/hooks/useQuoteRequests";
+import { toast } from "sonner";
 
 const processes = [
   "CNC Machining",
@@ -58,6 +61,9 @@ const materials = [
 const GetQuote = () => {
   const { t, language } = useLanguage();
   const isRTL = language === "ar";
+  const navigate = useNavigate();
+  const { user, isLoading: authLoading } = useAuth();
+  const { submitQuoteRequest, isSubmitting } = useQuoteRequests();
   
   const [step, setStep] = useState(1);
   const [files, setFiles] = useState<File[]>([]);
@@ -70,9 +76,18 @@ const GetQuote = () => {
     companyName: "",
     email: "",
     phone: "",
+    title: "",
   });
 
   const { isAnalyzing, analysisResult, analyzeDrawing, clearAnalysis } = useDrawingAnalysis();
+
+  // Check if user is logged in when they reach step 3
+  useEffect(() => {
+    if (step === 3 && !user && !authLoading) {
+      toast.info("Please sign in to submit your quote request");
+      navigate("/login");
+    }
+  }, [step, user, authLoading, navigate]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -111,10 +126,38 @@ const GetQuote = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Quote request:", { files, ...formData, analysis: analysisResult });
-    // TODO: Submit to backend
+
+    if (!user) {
+      toast.error("Please sign in to submit a quote request");
+      navigate("/login");
+      return;
+    }
+
+    // Generate a title from the first file name or process
+    const title = formData.title || 
+      (files.length > 0 ? files[0].name.replace(/\.[^/.]+$/, "") : formData.process) ||
+      "Quote Request";
+
+    const result = await submitQuoteRequest(
+      {
+        title,
+        description: formData.notes,
+        process: formData.process,
+        material: formData.material,
+        quantity: parseInt(formData.quantity) || 1,
+        notes: formData.notes,
+        ai_analysis: analysisResult ? (analysisResult as unknown as Record<string, unknown>) : undefined,
+      },
+      files
+    );
+
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      toast.error(result.error || "Failed to submit quote request");
+    }
   };
 
   const labels = {
@@ -137,12 +180,27 @@ const GetQuote = () => {
             </span>
           </Link>
 
-          <Link to="/">
-            <Button variant="ghost" size="sm">
-              {isRTL ? <ArrowRight className="h-4 w-4 ml-2" /> : <ArrowLeft className="h-4 w-4 mr-2" />}
-              {t.common.backToHome}
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">
+                  {isRTL ? "لوحة التحكم" : "Dashboard"}
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  {isRTL ? "تسجيل الدخول" : "Sign In"}
+                </Button>
+              </Link>
+            )}
+            <Link to="/">
+              <Button variant="ghost" size="sm">
+                {isRTL ? <ArrowRight className="h-4 w-4 ml-2" /> : <ArrowLeft className="h-4 w-4 mr-2" />}
+                {t.common.backToHome}
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -308,6 +366,17 @@ const GetQuote = () => {
                         </p>
                       </div>
 
+                      {/* Title Field */}
+                      <div className="space-y-2">
+                        <Label htmlFor="title">{isRTL ? "عنوان الطلب" : "Request Title"}</Label>
+                        <Input
+                          id="title"
+                          placeholder={isRTL ? "مثال: قطع ألومنيوم مخصصة" : "e.g., Custom Aluminum Parts"}
+                          value={formData.title}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+                        />
+                      </div>
+
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>{t.getQuote.manufacturingProcess}</Label>
@@ -409,43 +478,60 @@ const GetQuote = () => {
                           {t.getQuote.contactTitle}
                         </h2>
                         <p className="text-muted-foreground">
-                          {t.getQuote.contactSubtitle}
+                          {user 
+                            ? (isRTL ? "راجع طلبك وأرسله" : "Review your request and submit")
+                            : t.getQuote.contactSubtitle}
                         </p>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="companyName">{t.common.companyName}</Label>
-                          <Input
-                            id="companyName"
-                            placeholder={t.getQuote.companyPlaceholder}
-                            value={formData.companyName}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
-                          />
+                      {user ? (
+                        /* Logged in - Show summary */
+                        <div className="space-y-4">
+                          <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                            <h3 className="font-medium text-foreground">
+                              {isRTL ? "ملخص الطلب" : "Request Summary"}
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-muted-foreground">{isRTL ? "العنوان:" : "Title:"}</span>
+                                <p className="font-medium text-foreground">
+                                  {formData.title || files[0]?.name || "Quote Request"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{t.getQuote.manufacturingProcess}:</span>
+                                <p className="font-medium text-foreground">{formData.process || "Not specified"}</p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{t.getQuote.material}:</span>
+                                <p className="font-medium text-foreground">{formData.material || "Not specified"}</p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{t.getQuote.quantity}:</span>
+                                <p className="font-medium text-foreground">{formData.quantity || "1"}</p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{isRTL ? "الملفات:" : "Files:"}</span>
+                                <p className="font-medium text-foreground">{files.length} file(s)</p>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="email">{t.common.email}</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="you@company.com"
-                            value={formData.email}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                          />
+                      ) : (
+                        /* Not logged in - Prompt to sign in */
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground mb-4">
+                            {isRTL 
+                              ? "يرجى تسجيل الدخول لإرسال طلب عرض السعر"
+                              : "Please sign in to submit your quote request"}
+                          </p>
+                          <Link to="/login">
+                            <Button variant="hero">
+                              {isRTL ? "تسجيل الدخول" : "Sign In to Continue"}
+                            </Button>
+                          </Link>
                         </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">{t.common.phone}</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="+20 123 456 7890"
-                            value={formData.phone}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-                          />
-                        </div>
-                      </div>
+                      )}
 
                       <div className="flex gap-3">
                         <Button
@@ -456,10 +542,26 @@ const GetQuote = () => {
                           {isRTL ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
                           {t.common.back}
                         </Button>
-                        <Button type="submit" variant="hero" className="flex-1">
-                          {t.getQuote.submitQuote}
-                          {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-                        </Button>
+                        {user && (
+                          <Button 
+                            type="submit" 
+                            variant="hero" 
+                            className="flex-1"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                {isRTL ? "جاري الإرسال..." : "Submitting..."}
+                              </>
+                            ) : (
+                              <>
+                                {t.getQuote.submitQuote}
+                                {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   )}

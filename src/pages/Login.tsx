@@ -1,20 +1,56 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Factory, Mail, Lock, ArrowRight } from "lucide-react";
+import { Factory, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { signIn, user, role, isLoading: authLoading } = useAuth();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userType, setUserType] = useState<"client" | "supplier">("client");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && role && !authLoading) {
+      if (role === "supplier") {
+        navigate("/supplier/dashboard");
+      } else if (role === "internal_ops" || role === "admin") {
+        navigate("/operations");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [user, role, authLoading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement authentication
-    console.log("Login attempt:", { email, userType });
+    setIsLoading(true);
+
+    const { error } = await signIn(email, password);
+
+    if (error) {
+      toast.error(error.message || "Failed to sign in");
+      setIsLoading(false);
+      return;
+    }
+
+    toast.success("Welcome back!");
+    // Navigation will happen via useEffect when user/role updates
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -38,32 +74,6 @@ const Login = () => {
             Sign in to access your dashboard
           </p>
 
-          {/* User Type Toggle */}
-          <div className="flex gap-2 p-1 bg-muted rounded-lg mb-8">
-            <button
-              type="button"
-              onClick={() => setUserType("client")}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
-                userType === "client"
-                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
-              }`}
-            >
-              Client
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType("supplier")}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
-                userType === "supplier"
-                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
-              }`}
-            >
-              Supplier
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -77,6 +87,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -101,13 +112,23 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
-            <Button type="submit" variant="hero" className="w-full group">
-              Sign In
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <Button type="submit" variant="hero" className="w-full group" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
             </Button>
           </form>
 
