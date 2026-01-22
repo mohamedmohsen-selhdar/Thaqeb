@@ -1,11 +1,18 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Factory, Mail, Lock, User, Building2, ArrowRight, Phone } from "lucide-react";
+import { Factory, Mail, Lock, User, Building2, ArrowRight, Phone, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useSupplierRegistration } from "@/hooks/useSupplierRegistration";
+import { toast } from "sonner";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { signUp, user, role, isLoading: authLoading } = useAuth();
+  const { registerSupplier, isRegistering } = useSupplierRegistration();
+  
   const [userType, setUserType] = useState<"client" | "supplier">("client");
   const [formData, setFormData] = useState({
     fullName: "",
@@ -14,15 +21,76 @@ const Register = () => {
     phone: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && role && !authLoading) {
+      if (role === "supplier") {
+        navigate("/supplier/dashboard");
+      } else if (role === "internal_ops" || role === "admin") {
+        navigate("/operations");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [user, role, authLoading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register attempt:", { ...formData, userType });
+    setIsLoading(true);
+
+    if (userType === "supplier") {
+      // Use supplier registration flow
+      const result = await registerSupplier({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        companyName: formData.companyName,
+        phone: formData.phone,
+      });
+
+      if (!result.success) {
+        toast.error(result.error || "Failed to create account");
+        setIsLoading(false);
+        return;
+      }
+
+      navigate("/supplier/dashboard");
+    } else {
+      // Standard client registration
+      const { error } = await signUp(formData.email, formData.password, {
+        full_name: formData.fullName,
+        company_name: formData.companyName,
+        phone: formData.phone,
+      });
+
+      if (error) {
+        toast.error(error.message || "Failed to create account");
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success("Account created successfully!");
+      navigate("/dashboard");
+    }
+
+    setIsLoading(false);
   };
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const isSubmitting = isLoading || isRegistering;
 
   return (
     <div className="min-h-screen flex">
@@ -39,26 +107,49 @@ const Register = () => {
             Join Egypt's Manufacturing Revolution
           </h2>
           <p className="text-muted-foreground mb-8">
-            Whether you need parts manufactured or want to grow your workshop's business, 
-            Fabrishare is your gateway to the future of manufacturing.
+            {userType === "supplier" 
+              ? "Grow your workshop's business by connecting with clients who need quality manufacturing."
+              : "Connect with certified workshops and get quality parts manufactured on demand."}
           </p>
 
           <div className="space-y-4">
-            {[
-              "Access to 100+ certified workshops",
-              "Quality-assured manufacturing",
-              "Real-time order tracking",
-              "48-hour quote turnaround",
-            ].map((benefit) => (
-              <div key={benefit} className="flex items-center gap-3 group cursor-default">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
-                  <svg className="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-sm text-foreground transition-colors duration-300 group-hover:text-primary">{benefit}</span>
-              </div>
-            ))}
+            {userType === "supplier" ? (
+              <>
+                {[
+                  "Access new client opportunities",
+                  "Flexible capacity management",
+                  "Secure payment processing",
+                  "Quality rating system",
+                ].map((benefit) => (
+                  <div key={benefit} className="flex items-center gap-3 group cursor-default">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
+                      <svg className="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-foreground transition-colors duration-300 group-hover:text-primary">{benefit}</span>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                {[
+                  "Access to 100+ certified workshops",
+                  "Quality-assured manufacturing",
+                  "Real-time order tracking",
+                  "48-hour quote turnaround",
+                ].map((benefit) => (
+                  <div key={benefit} className="flex items-center gap-3 group cursor-default">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
+                      <svg className="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-foreground transition-colors duration-300 group-hover:text-primary">{benefit}</span>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -88,6 +179,7 @@ const Register = () => {
             <button
               type="button"
               onClick={() => setUserType("client")}
+              disabled={isSubmitting}
               className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                 userType === "client"
                   ? "bg-card text-foreground shadow-sm scale-[1.02]"
@@ -99,6 +191,7 @@ const Register = () => {
             <button
               type="button"
               onClick={() => setUserType("supplier")}
+              disabled={isSubmitting}
               className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                 userType === "supplier"
                   ? "bg-card text-foreground shadow-sm scale-[1.02]"
@@ -122,21 +215,25 @@ const Register = () => {
                     onChange={handleChange("fullName")}
                     className="pl-10"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name</Label>
+                <Label htmlFor="companyName">
+                  {userType === "supplier" ? "Workshop Name" : "Company Name"}
+                </Label>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="companyName"
-                    placeholder="ABC Industries"
+                    placeholder={userType === "supplier" ? "ABC Workshop" : "ABC Industries"}
                     value={formData.companyName}
                     onChange={handleChange("companyName")}
                     className="pl-10"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -154,6 +251,7 @@ const Register = () => {
                   onChange={handleChange("email")}
                   className="pl-10"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -170,6 +268,7 @@ const Register = () => {
                   onChange={handleChange("phone")}
                   className="pl-10"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -186,13 +285,24 @@ const Register = () => {
                   onChange={handleChange("password")}
                   className="pl-10"
                   required
+                  minLength={6}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
 
-            <Button type="submit" variant="hero" className="w-full group">
-              Create Account
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <Button type="submit" variant="hero" className="w-full group" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  Create {userType === "supplier" ? "Supplier" : ""} Account
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
             </Button>
           </form>
 
