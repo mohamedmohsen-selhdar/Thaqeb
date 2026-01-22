@@ -14,16 +14,349 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      order_timeline: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          order_id: string
+          status: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          order_id: string
+          status: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string
+          status?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_timeline_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          assigned_by: string | null
+          client_id: string
+          created_at: string
+          deadline: string | null
+          description: string | null
+          final_price: number | null
+          id: string
+          material: string | null
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          process: Database["public"]["Enums"]["manufacturing_process"] | null
+          production_end: string | null
+          production_start: string | null
+          qa_notes: string | null
+          quantity: number | null
+          quote_request_id: string | null
+          quoted_price: number | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          supplier_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          client_id: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          final_price?: number | null
+          id?: string
+          material?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          process?: Database["public"]["Enums"]["manufacturing_process"] | null
+          production_end?: string | null
+          production_start?: string | null
+          qa_notes?: string | null
+          quantity?: number | null
+          quote_request_id?: string | null
+          quoted_price?: number | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          supplier_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_by?: string | null
+          client_id?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          final_price?: number | null
+          id?: string
+          material?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          process?: Database["public"]["Enums"]["manufacturing_process"] | null
+          production_end?: string | null
+          production_start?: string | null
+          qa_notes?: string | null
+          quantity?: number | null
+          quote_request_id?: string | null
+          quoted_price?: number | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          supplier_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company_name: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company_name?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          ai_analysis: Json | null
+          client_id: string
+          complexity: string | null
+          created_at: string
+          description: string | null
+          dimensions: string | null
+          estimated_time: string | null
+          file_urls: string[] | null
+          id: string
+          material: string | null
+          notes: string | null
+          process: Database["public"]["Enums"]["manufacturing_process"] | null
+          quantity: number | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          surface_finish: string | null
+          title: string
+          tolerances: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          client_id: string
+          complexity?: string | null
+          created_at?: string
+          description?: string | null
+          dimensions?: string | null
+          estimated_time?: string | null
+          file_urls?: string[] | null
+          id?: string
+          material?: string | null
+          notes?: string | null
+          process?: Database["public"]["Enums"]["manufacturing_process"] | null
+          quantity?: number | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          surface_finish?: string | null
+          title: string
+          tolerances?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          client_id?: string
+          complexity?: string | null
+          created_at?: string
+          description?: string | null
+          dimensions?: string | null
+          estimated_time?: string | null
+          file_urls?: string[] | null
+          id?: string
+          material?: string | null
+          notes?: string | null
+          process?: Database["public"]["Enums"]["manufacturing_process"] | null
+          quantity?: number | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          surface_finish?: string | null
+          title?: string
+          tolerances?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          capabilities:
+            | Database["public"]["Enums"]["manufacturing_process"][]
+            | null
+          capacity_3d_printing: number | null
+          capacity_cnc: number | null
+          capacity_other: number | null
+          capacity_sheet_metal: number | null
+          certifications: string[] | null
+          company_name: string
+          contact_email: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          on_time_rate: number | null
+          quality_score: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          capabilities?:
+            | Database["public"]["Enums"]["manufacturing_process"][]
+            | null
+          capacity_3d_printing?: number | null
+          capacity_cnc?: number | null
+          capacity_other?: number | null
+          capacity_sheet_metal?: number | null
+          certifications?: string[] | null
+          company_name: string
+          contact_email: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          on_time_rate?: number | null
+          quality_score?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          capabilities?:
+            | Database["public"]["Enums"]["manufacturing_process"][]
+            | null
+          capacity_3d_printing?: number | null
+          capacity_cnc?: number | null
+          capacity_other?: number | null
+          capacity_sheet_metal?: number | null
+          certifications?: string[] | null
+          company_name?: string
+          contact_email?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          on_time_rate?: number | null
+          quality_score?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "client" | "supplier" | "internal_ops" | "admin"
+      manufacturing_process:
+        | "cnc_machining"
+        | "sheet_metal"
+        | "3d_printing"
+        | "injection_molding"
+        | "casting"
+        | "laser_cutting"
+        | "welding"
+        | "other"
+      order_status:
+        | "draft"
+        | "pending_review"
+        | "quoted"
+        | "accepted"
+        | "in_production"
+        | "qa_review"
+        | "completed"
+        | "cancelled"
+      priority_level: "low" | "medium" | "high" | "urgent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +483,29 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["client", "supplier", "internal_ops", "admin"],
+      manufacturing_process: [
+        "cnc_machining",
+        "sheet_metal",
+        "3d_printing",
+        "injection_molding",
+        "casting",
+        "laser_cutting",
+        "welding",
+        "other",
+      ],
+      order_status: [
+        "draft",
+        "pending_review",
+        "quoted",
+        "accepted",
+        "in_production",
+        "qa_review",
+        "completed",
+        "cancelled",
+      ],
+      priority_level: ["low", "medium", "high", "urgent"],
+    },
   },
 } as const
