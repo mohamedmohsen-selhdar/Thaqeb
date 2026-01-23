@@ -28,13 +28,6 @@ const ClientDashboard = () => {
   
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Redirect if not logged in or not a client
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/login");
-    }
-  }, [user, authLoading, navigate]);
-
   const handleSignOut = async () => {
     await signOut();
     toast.success("Signed out successfully");

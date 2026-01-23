@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -29,9 +30,21 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/get-quote" element={<GetQuote />} />
-              <Route path="/dashboard" element={<ClientDashboard />} />
-              <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
-              <Route path="/operations" element={<OperationsDashboard />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute allowedRoles={['client', 'admin']}>
+                  <ClientDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/supplier/dashboard" element={
+                <ProtectedRoute allowedRoles={['supplier', 'admin']}>
+                  <SupplierDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/operations" element={
+                <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
+                  <OperationsDashboard />
+                </ProtectedRoute>
+              } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
