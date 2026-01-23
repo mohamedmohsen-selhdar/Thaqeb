@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      machines: {
+        Row: {
+          accuracy: string | null
+          available_hours_per_day: number | null
+          capacity_description: string | null
+          created_at: string
+          id: string
+          idle_capacity_percent: number | null
+          is_active: boolean | null
+          machine_type: Database["public"]["Enums"]["machine_type"]
+          name: string
+          supplier_id: string
+          table_size: string | null
+          tonnage: number | null
+          updated_at: string
+          xyz_capacity: string | null
+        }
+        Insert: {
+          accuracy?: string | null
+          available_hours_per_day?: number | null
+          capacity_description?: string | null
+          created_at?: string
+          id?: string
+          idle_capacity_percent?: number | null
+          is_active?: boolean | null
+          machine_type: Database["public"]["Enums"]["machine_type"]
+          name: string
+          supplier_id: string
+          table_size?: string | null
+          tonnage?: number | null
+          updated_at?: string
+          xyz_capacity?: string | null
+        }
+        Update: {
+          accuracy?: string | null
+          available_hours_per_day?: number | null
+          capacity_description?: string | null
+          created_at?: string
+          id?: string
+          idle_capacity_percent?: number | null
+          is_active?: boolean | null
+          machine_type?: Database["public"]["Enums"]["machine_type"]
+          name?: string
+          supplier_id?: string
+          table_size?: string | null
+          tonnage?: number | null
+          updated_at?: string
+          xyz_capacity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machines_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_timeline: {
         Row: {
           created_at: string
@@ -51,6 +110,8 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_notes: string | null
+          admin_selected_supplier_id: string | null
           assigned_by: string | null
           client_id: string
           created_at: string
@@ -58,6 +119,7 @@ export type Database = {
           description: string | null
           final_price: number | null
           id: string
+          internal_po_number: string | null
           material: string | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           process: Database["public"]["Enums"]["manufacturing_process"] | null
@@ -65,14 +127,23 @@ export type Database = {
           production_start: string | null
           qa_notes: string | null
           quantity: number | null
+          quotation_pdf_url: string | null
           quote_request_id: string | null
           quoted_price: number | null
+          selection_reason: string | null
           status: Database["public"]["Enums"]["order_status"] | null
+          suggested_material: string | null
+          suggested_process: string | null
           supplier_id: string | null
+          supplier_lead_days: number | null
+          supplier_price: number | null
+          supplier_submitted_at: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          admin_notes?: string | null
+          admin_selected_supplier_id?: string | null
           assigned_by?: string | null
           client_id: string
           created_at?: string
@@ -80,6 +151,7 @@ export type Database = {
           description?: string | null
           final_price?: number | null
           id?: string
+          internal_po_number?: string | null
           material?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           process?: Database["public"]["Enums"]["manufacturing_process"] | null
@@ -87,14 +159,23 @@ export type Database = {
           production_start?: string | null
           qa_notes?: string | null
           quantity?: number | null
+          quotation_pdf_url?: string | null
           quote_request_id?: string | null
           quoted_price?: number | null
+          selection_reason?: string | null
           status?: Database["public"]["Enums"]["order_status"] | null
+          suggested_material?: string | null
+          suggested_process?: string | null
           supplier_id?: string | null
+          supplier_lead_days?: number | null
+          supplier_price?: number | null
+          supplier_submitted_at?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          admin_notes?: string | null
+          admin_selected_supplier_id?: string | null
           assigned_by?: string | null
           client_id?: string
           created_at?: string
@@ -102,6 +183,7 @@ export type Database = {
           description?: string | null
           final_price?: number | null
           id?: string
+          internal_po_number?: string | null
           material?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           process?: Database["public"]["Enums"]["manufacturing_process"] | null
@@ -109,10 +191,17 @@ export type Database = {
           production_start?: string | null
           qa_notes?: string | null
           quantity?: number | null
+          quotation_pdf_url?: string | null
           quote_request_id?: string | null
           quoted_price?: number | null
+          selection_reason?: string | null
           status?: Database["public"]["Enums"]["order_status"] | null
+          suggested_material?: string | null
+          suggested_process?: string | null
           supplier_id?: string | null
+          supplier_lead_days?: number | null
+          supplier_price?: number | null
+          supplier_submitted_at?: string | null
           title?: string
           updated_at?: string
         }
@@ -136,34 +225,52 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          business_name: string | null
+          business_type: Database["public"]["Enums"]["business_type"] | null
           company_name: string | null
           created_at: string
           email: string
           full_name: string | null
           id: string
+          location_address: string | null
+          location_lat: number | null
+          location_lng: number | null
           phone: string | null
+          profile_completed: boolean | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          business_name?: string | null
+          business_type?: Database["public"]["Enums"]["business_type"] | null
           company_name?: string | null
           created_at?: string
           email: string
           full_name?: string | null
           id?: string
+          location_address?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
           phone?: string | null
+          profile_completed?: boolean | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          business_name?: string | null
+          business_type?: Database["public"]["Enums"]["business_type"] | null
           company_name?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
           id?: string
+          location_address?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
           phone?: string | null
+          profile_completed?: boolean | null
           updated_at?: string
           user_id?: string
         }
@@ -232,6 +339,63 @@ export type Database = {
         }
         Relationships: []
       }
+      supplier_recommendations: {
+        Row: {
+          capability_score: number | null
+          created_at: string
+          id: string
+          location_score: number | null
+          order_id: string
+          payment_score: number | null
+          performance_score: number | null
+          rank: number | null
+          specialty_score: number | null
+          supplier_id: string
+          total_score: number | null
+        }
+        Insert: {
+          capability_score?: number | null
+          created_at?: string
+          id?: string
+          location_score?: number | null
+          order_id: string
+          payment_score?: number | null
+          performance_score?: number | null
+          rank?: number | null
+          specialty_score?: number | null
+          supplier_id: string
+          total_score?: number | null
+        }
+        Update: {
+          capability_score?: number | null
+          created_at?: string
+          id?: string
+          location_score?: number | null
+          order_id?: string
+          payment_score?: number | null
+          performance_score?: number | null
+          rank?: number | null
+          specialty_score?: number | null
+          supplier_id?: string
+          total_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_recommendations_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_recommendations_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -249,10 +413,25 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean | null
+          location_lat: number | null
+          location_lng: number | null
           on_time_rate: number | null
+          operating_hours_end: string | null
+          operating_hours_start: string | null
+          payment_preference:
+            | Database["public"]["Enums"]["payment_preference"]
+            | null
+          performance_score: number | null
+          profile_completed: boolean | null
+          provides_raw_material: boolean | null
           quality_score: number | null
+          specialties:
+            | Database["public"]["Enums"]["supplier_specialty"][]
+            | null
+          total_jobs_completed: number | null
           updated_at: string
           user_id: string
+          years_experience: number | null
         }
         Insert: {
           address?: string | null
@@ -270,10 +449,25 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
           on_time_rate?: number | null
+          operating_hours_end?: string | null
+          operating_hours_start?: string | null
+          payment_preference?:
+            | Database["public"]["Enums"]["payment_preference"]
+            | null
+          performance_score?: number | null
+          profile_completed?: boolean | null
+          provides_raw_material?: boolean | null
           quality_score?: number | null
+          specialties?:
+            | Database["public"]["Enums"]["supplier_specialty"][]
+            | null
+          total_jobs_completed?: number | null
           updated_at?: string
           user_id: string
+          years_experience?: number | null
         }
         Update: {
           address?: string | null
@@ -291,10 +485,25 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
           on_time_rate?: number | null
+          operating_hours_end?: string | null
+          operating_hours_start?: string | null
+          payment_preference?:
+            | Database["public"]["Enums"]["payment_preference"]
+            | null
+          performance_score?: number | null
+          profile_completed?: boolean | null
+          provides_raw_material?: boolean | null
           quality_score?: number | null
+          specialties?:
+            | Database["public"]["Enums"]["supplier_specialty"][]
+            | null
+          total_jobs_completed?: number | null
           updated_at?: string
           user_id?: string
+          years_experience?: number | null
         }
         Relationships: []
       }
@@ -338,6 +547,19 @@ export type Database = {
     }
     Enums: {
       app_role: "client" | "supplier" | "internal_ops" | "admin"
+      business_type: "factory" | "startup" | "trader" | "other"
+      machine_type:
+        | "cnc_milling"
+        | "cnc_lathe"
+        | "laser_cutting"
+        | "plasma_cutting"
+        | "bending"
+        | "wire_cutting"
+        | "die_casting"
+        | "metal_3d_printing"
+        | "welding"
+        | "surface_finishing"
+        | "other"
       manufacturing_process:
         | "cnc_machining"
         | "sheet_metal"
@@ -356,7 +578,19 @@ export type Database = {
         | "qa_review"
         | "completed"
         | "cancelled"
+      payment_preference: "cash" | "partial" | "credit"
       priority_level: "low" | "medium" | "high" | "urgent"
+      supplier_specialty:
+        | "cnc_spare_parts"
+        | "sheet_metal_fabrication"
+        | "gear_machining"
+        | "tube_cutting"
+        | "wire_cutting"
+        | "die_casting"
+        | "metal_3d_printing"
+        | "welding_assembly"
+        | "surface_finishing"
+        | "galvanization"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -485,6 +719,20 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["client", "supplier", "internal_ops", "admin"],
+      business_type: ["factory", "startup", "trader", "other"],
+      machine_type: [
+        "cnc_milling",
+        "cnc_lathe",
+        "laser_cutting",
+        "plasma_cutting",
+        "bending",
+        "wire_cutting",
+        "die_casting",
+        "metal_3d_printing",
+        "welding",
+        "surface_finishing",
+        "other",
+      ],
       manufacturing_process: [
         "cnc_machining",
         "sheet_metal",
@@ -505,7 +753,20 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      payment_preference: ["cash", "partial", "credit"],
       priority_level: ["low", "medium", "high", "urgent"],
+      supplier_specialty: [
+        "cnc_spare_parts",
+        "sheet_metal_fabrication",
+        "gear_machining",
+        "tube_cutting",
+        "wire_cutting",
+        "die_casting",
+        "metal_3d_printing",
+        "welding_assembly",
+        "surface_finishing",
+        "galvanization",
+      ],
     },
   },
 } as const

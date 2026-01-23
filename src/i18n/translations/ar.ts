@@ -42,6 +42,8 @@ export const ar: TranslationKeys = {
     cta: {
       upload: "ارفع الرسومات",
       howItWorks: "شاهد كيف يعمل",
+      needParts: "أحتاج قطع مصنّعة",
+      ownWorkshop: "أملك ورشة عمل",
     },
     trust: {
       quotes: "عروض في ٤٨ ساعة",
