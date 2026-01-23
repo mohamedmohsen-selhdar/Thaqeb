@@ -35,7 +35,7 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 const SupplierDashboard = () => {
   const [activeTab, setActiveTab] = useState<"active" | "history">("active");
   const { signOut } = useAuth();
-  const { activeOrders, historyOrders, stats, supplier, isLoading } = useSupplierOrders();
+  const { activeOrders, historyOrders, stats, supplier, isLoading, acceptJob, declineJob, isAccepting, isDeclining } = useSupplierOrders();
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -273,15 +273,25 @@ const SupplierDashboard = () => {
                           </p>
                         </div>
 
-                        {order.status === "pending_review" ? (
+                        {order.status === "pending_review" || order.status === "quoted" ? (
                           <div className="flex gap-2">
-                            <Button variant="hero" size="sm">
+                            <Button 
+                              variant="hero" 
+                              size="sm" 
+                              onClick={() => acceptJob(order.id)}
+                              disabled={isAccepting || isDeclining}
+                            >
                               <CheckCircle2 className="h-4 w-4" />
-                              Accept
+                              {isAccepting ? "Accepting..." : "Accept"}
                             </Button>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => declineJob(order.id)}
+                              disabled={isAccepting || isDeclining}
+                            >
                               <XCircle className="h-4 w-4" />
-                              Decline
+                              {isDeclining ? "Declining..." : "Decline"}
                             </Button>
                           </div>
                         ) : (
