@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 
 export type SupplierOrder = Tables<"orders">;
@@ -14,6 +15,7 @@ export interface SupplierStats {
 
 export function useSupplierOrders() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: supplier, isLoading: supplierLoading } = useQuery({
     queryKey: ["supplier", user?.id],
@@ -24,7 +26,7 @@ export function useSupplierOrders() {
         .from("suppliers")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching supplier:", error);
@@ -53,6 +55,62 @@ export function useSupplierOrders() {
       return data as SupplierOrder[];
     },
     enabled: !!supplier?.id,
+  });
+
+  // Accept job mutation
+  const acceptJobMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: "in_production", production_start: new Date().toISOString() })
+        .eq("id", orderId);
+
+      if (error) throw error;
+
+      // Add timeline entry
+      await supabase.from("order_timeline").insert({
+        order_id: orderId,
+        status: "in_production",
+        notes: "Job accepted by supplier",
+        created_by: user?.id,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Job accepted successfully");
+      queryClient.invalidateQueries({ queryKey: ["supplier-orders"] });
+    },
+    onError: (error) => {
+      console.error("Error accepting job:", error);
+      toast.error("Failed to accept job");
+    },
+  });
+
+  // Decline job mutation
+  const declineJobMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: "pending_review", supplier_id: null })
+        .eq("id", orderId);
+
+      if (error) throw error;
+
+      // Add timeline entry
+      await supabase.from("order_timeline").insert({
+        order_id: orderId,
+        status: "pending_review",
+        notes: "Job declined by supplier - returning to review",
+        created_by: user?.id,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Job declined");
+      queryClient.invalidateQueries({ queryKey: ["supplier-orders"] });
+    },
+    onError: (error) => {
+      console.error("Error declining job:", error);
+      toast.error("Failed to decline job");
+    },
   });
 
   // Calculate stats
@@ -90,5 +148,9 @@ export function useSupplierOrders() {
     historyOrders,
     stats,
     isLoading: supplierLoading || ordersLoading,
+    acceptJob: acceptJobMutation.mutate,
+    declineJob: declineJobMutation.mutate,
+    isAccepting: acceptJobMutation.isPending,
+    isDeclining: declineJobMutation.isPending,
   };
 }
