@@ -14,6 +14,7 @@ import ClientDashboard from "./pages/dashboard/ClientDashboard";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 import OperationsDashboard from "./pages/dashboard/OperationsDashboard";
 import NotFound from "./pages/NotFound";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/get-quote" element={<GetQuote />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute allowedRoles={['client', 'admin']}>
                   <ClientDashboard />

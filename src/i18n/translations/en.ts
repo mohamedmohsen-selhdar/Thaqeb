@@ -40,6 +40,8 @@ export const en = {
     cta: {
       upload: "Upload Drawings",
       howItWorks: "See How It Works",
+      needParts: "I Need Parts Fabricated",
+      ownWorkshop: "I Own a Workshop",
     },
     trust: {
       quotes: "48h Quotes",

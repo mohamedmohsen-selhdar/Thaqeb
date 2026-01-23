@@ -74,18 +74,20 @@ const HeroSection = () => {
             {t.hero.subtitle}
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Two Clear Entry Points */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-            <Link to="/get-quote">
+            <Link to="/register?role=client">
               <Button variant="hero" size="xl" className="group">
                 <Upload className="h-5 w-5" />
-                {t.hero.cta.upload}
+                {t.hero.cta.needParts}
                 <ArrowRight className={`h-5 w-5 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
               </Button>
             </Link>
-            <Link to="/how-it-works">
-              <Button variant="outline-primary" size="xl">
-                {t.hero.cta.howItWorks}
+            <Link to="/register?role=supplier">
+              <Button variant="steel" size="xl" className="group">
+                <Zap className="h-5 w-5" />
+                {t.hero.cta.ownWorkshop}
+                <ArrowRight className={`h-5 w-5 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
               </Button>
             </Link>
           </div>
