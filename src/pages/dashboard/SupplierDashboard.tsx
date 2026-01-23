@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,10 +16,15 @@ import {
   XCircle,
   Eye,
   Loader2,
+  Cog,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useSupplierOrders, SupplierOrder } from "@/hooks/useSupplierOrders";
 import { useAuth } from "@/hooks/useAuth";
+import { useSupplierProfile } from "@/hooks/useSupplierProfile";
+import { ProfileCompletionCard } from "@/components/profile/ProfileCompletionCard";
+import { MachineList } from "@/components/machines/MachineList";
+import { toast } from "sonner";
 
 type OrderStatus = "pending_review" | "quoted" | "in_production" | "completed" | "cancelled" | "delivered";
 
@@ -33,9 +38,28 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 };
 
 const SupplierDashboard = () => {
-  const [activeTab, setActiveTab] = useState<"active" | "history">("active");
-  const { signOut } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"jobs" | "machines">("jobs");
+  const [jobsTab, setJobsTab] = useState<"active" | "history">("active");
+  const { signOut, profile } = useAuth();
   const { activeOrders, historyOrders, stats, supplier, isLoading, acceptJob, declineJob, isAccepting, isDeclining } = useSupplierOrders();
+  const { supplier: supplierProfile, profileCompletion } = useSupplierProfile();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out successfully");
+    navigate("/");
+  };
+
+  const getInitials = () => {
+    if (supplierProfile?.company_name) {
+      return supplierProfile.company_name.slice(0, 2).toUpperCase();
+    }
+    if (profile?.full_name) {
+      return profile.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+    }
+    return "SP";
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -84,7 +108,24 @@ const SupplierDashboard = () => {
         </nav>
 
         <div className="p-4 border-t border-border">
-          <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+          <div className="flex items-center gap-3 mb-4 px-3">
+            <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center">
+              <span className="text-sm font-medium text-primary">{getInitials()}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {supplierProfile?.company_name || "Workshop"}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {profile?.email}
+              </p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-muted-foreground"
+            onClick={handleSignOut}
+          >
             <LogOut className="h-5 w-5 mr-3" />
             Sign Out
           </Button>
@@ -114,13 +155,24 @@ const SupplierDashboard = () => {
               <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
             </Button>
             <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-sm font-medium text-primary">MS</span>
+              <span className="text-sm font-medium text-primary">{getInitials()}</span>
             </div>
           </div>
         </header>
 
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto">
+          {/* Profile Completion Card */}
+          {profileCompletion.percentage < 100 && (
+            <div className="mb-8">
+              <ProfileCompletionCard
+                fields={profileCompletion.fields}
+                onComplete={() => navigate("/supplier/profile")}
+                title="Complete Your Workshop Profile"
+              />
+            </div>
+          )}
+
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 cursor-pointer group">
@@ -197,43 +249,73 @@ const SupplierDashboard = () => {
             </div>
           </div>
 
-          {/* Tabs */}
+          {/* Main Tabs */}
           <div className="flex gap-2 mb-6">
             <button
-              onClick={() => setActiveTab("active")}
+              onClick={() => setActiveTab("jobs")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeTab === "active"
+                activeTab === "jobs"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
-              Active Jobs ({activeOrders.length})
+              Jobs
             </button>
             <button
-              onClick={() => setActiveTab("history")}
+              onClick={() => setActiveTab("machines")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeTab === "history"
+                activeTab === "machines"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
-              History
+              <Cog className="h-4 w-4 inline mr-1" />
+              Machines
             </button>
           </div>
 
-          {/* Jobs List */}
-          <div className="space-y-4">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+          {/* Content based on active tab */}
+          {activeTab === "machines" ? (
+            <MachineList supplierId={supplierProfile?.id} />
+          ) : (
+            <>
+              {/* Jobs Sub-tabs */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setJobsTab("active")}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    jobsTab === "active"
+                      ? "bg-secondary text-secondary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Active Jobs ({activeOrders.length})
+                </button>
+                <button
+                  onClick={() => setJobsTab("history")}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    jobsTab === "history"
+                      ? "bg-secondary text-secondary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  History
+                </button>
               </div>
-            ) : (activeTab === "active" ? activeOrders : historyOrders).length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Wrench className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No {activeTab === "active" ? "active" : "completed"} jobs yet</p>
-              </div>
-            ) : (
-              (activeTab === "active" ? activeOrders : historyOrders).map((order) => {
+
+              {/* Jobs List */}
+              <div className="space-y-4">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                  </div>
+                ) : (jobsTab === "active" ? activeOrders : historyOrders).length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Wrench className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No {jobsTab === "active" ? "active" : "completed"} jobs yet</p>
+                  </div>
+                ) : (
+                  (jobsTab === "active" ? activeOrders : historyOrders).map((order) => {
                 const status = statusConfig[order.status || "pending_review"] || statusConfig.pending_review;
                 return (
                   <div
@@ -306,7 +388,9 @@ const SupplierDashboard = () => {
                 );
               })
             )}
-          </div>
+              </div>
+            </>
+          )}
         </main>
       </div>
     </div>

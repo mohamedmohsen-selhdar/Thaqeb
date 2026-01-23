@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useClientQuoteRequests, statusDisplayMap, processDisplayMap } from "@/hooks/useOrders";
 import { toast } from "sonner";
+import { ProfileCompletionCard } from "@/components/profile/ProfileCompletionCard";
+import { ClientProfileForm } from "@/components/profile/ClientProfileForm";
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +29,16 @@ const ClientDashboard = () => {
   const { data: quoteRequests, isLoading: quotesLoading, error } = useClientQuoteRequests();
   
   const [searchQuery, setSearchQuery] = useState("");
+  const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
+
+  // Calculate profile completion
+  const profileFields = [
+    { label: "Business Name", completed: !!profile?.business_name },
+    { label: "Business Type", completed: !!profile?.business_type },
+    { label: "Location", completed: !!profile?.location_address },
+    { label: "Phone Number", completed: !!profile?.phone },
+  ];
+  const isProfileComplete = profileFields.every((f) => f.completed);
 
   const handleSignOut = async () => {
     await signOut();
@@ -164,6 +176,17 @@ const ClientDashboard = () => {
 
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto">
+          {/* Profile Completion Card */}
+          {!isProfileComplete && (
+            <div className="mb-8">
+              <ProfileCompletionCard
+                fields={profileFields}
+                onComplete={() => setIsProfileFormOpen(true)}
+                title="Complete Your Business Profile"
+              />
+            </div>
+          )}
+
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 cursor-pointer group">
@@ -307,6 +330,12 @@ const ClientDashboard = () => {
           </div>
         </main>
       </div>
+
+      {/* Profile Form Dialog */}
+      <ClientProfileForm
+        open={isProfileFormOpen}
+        onOpenChange={setIsProfileFormOpen}
+      />
     </div>
   );
 };
