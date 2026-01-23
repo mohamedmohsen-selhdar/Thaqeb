@@ -12,6 +12,12 @@ interface Profile {
   company_name: string | null;
   phone: string | null;
   avatar_url: string | null;
+  business_name: string | null;
+  business_type: "factory" | "startup" | "trader" | "other" | null;
+  location_address: string | null;
+  location_lat: number | null;
+  location_lng: number | null;
+  profile_completed: boolean | null;
 }
 
 interface AuthContextType {
