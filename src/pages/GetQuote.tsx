@@ -148,7 +148,7 @@ const GetQuote = () => {
         material: formData.material,
         quantity: parseInt(formData.quantity) || 1,
         notes: formData.notes,
-        ai_analysis: analysisResult ? (analysisResult as unknown as Record<string, unknown>) : undefined,
+        ai_analysis: analysisResult ? JSON.parse(JSON.stringify(analysisResult)) : undefined,
       },
       files
     );
