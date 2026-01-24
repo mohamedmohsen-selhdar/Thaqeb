@@ -30,19 +30,23 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/get-quote" element={<GetQuote />} />
+              <Route path="/get-quote" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <GetQuote />
+                </ProtectedRoute>
+              } />
               <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/dashboard" element={
-                <ProtectedRoute allowedRoles={['client', 'admin']}>
+              <Route path="/client/dashboard" element={
+                <ProtectedRoute allowedRoles={['client']}>
                   <ClientDashboard />
                 </ProtectedRoute>
               } />
               <Route path="/supplier/dashboard" element={
-                <ProtectedRoute allowedRoles={['supplier', 'admin']}>
+                <ProtectedRoute allowedRoles={['supplier']}>
                   <SupplierDashboard />
                 </ProtectedRoute>
               } />
-              <Route path="/operations" element={
+              <Route path="/admin/dashboard" element={
                 <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
                   <OperationsDashboard />
                 </ProtectedRoute>
