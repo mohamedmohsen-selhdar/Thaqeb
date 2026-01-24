@@ -45,49 +45,49 @@ const HeroSection = () => {
   }, [t]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-16 overflow-hidden">
+    <section className="relative min-h-[80vh] flex items-center pt-16 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-pattern opacity-30" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
       
       {/* Glow Effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse-slow" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "2s" }} />
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-[100px] animate-pulse-slow" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-[80px] animate-pulse-slow" style={{ animationDelay: "2s" }} />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 mb-8 animate-fade-in">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-primary">{t.hero.badge}</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/5 mb-6 animate-fade-in hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 cursor-default">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs font-medium text-primary">{t.hero.badge}</span>
           </div>
 
-          {/* Headline */}
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-slide-up">
+          {/* Headline - Minimized */}
+          <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 animate-slide-up">
             {t.hero.title}{" "}
             <span className="text-gradient">{displayText}</span>
-            <span className="inline-block w-[3px] h-[0.9em] bg-primary ms-1 animate-pulse align-middle" />
+            <span className="inline-block w-[2px] h-[0.85em] bg-primary ms-1 animate-pulse align-middle" />
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: "0.1s" }}>
             {t.hero.subtitle}
           </p>
 
           {/* CTA Buttons - Two Clear Entry Points */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Link to="/register?role=client">
-              <Button variant="hero" size="xl" className="group">
-                <Upload className="h-5 w-5" />
+              <Button variant="hero" size="lg" className="group hover:shadow-glow-strong transition-all duration-300 hover:-translate-y-0.5">
+                <Upload className="h-4 w-4" />
                 {t.hero.cta.needParts}
-                <ArrowRight className={`h-5 w-5 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
+                <ArrowRight className={`h-4 w-4 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
               </Button>
             </Link>
             <Link to="/register?role=supplier">
-              <Button variant="steel" size="xl" className="group">
-                <Zap className="h-5 w-5" />
+              <Button variant="steel" size="lg" className="group hover:shadow-glow transition-all duration-300 hover:-translate-y-0.5">
+                <Zap className="h-4 w-4" />
                 {t.hero.cta.ownWorkshop}
-                <ArrowRight className={`h-5 w-5 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
+                <ArrowRight className={`h-4 w-4 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
               </Button>
             </Link>
           </div>

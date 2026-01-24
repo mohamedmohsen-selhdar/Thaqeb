@@ -24,9 +24,9 @@ const CapabilitiesSection = () => {
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">{t.capabilities.title}</h2>
             <p className="text-muted-foreground max-w-xl">{t.capabilities.subtitle}</p>
           </div>
-          <Link to="/capabilities">
-            <Button variant="outline-primary" className="group">
-              {t.capabilities.viewAll}
+          <Link to="/get-quote">
+            <Button variant="outline-primary" className="group hover:shadow-glow transition-all duration-300">
+              {t.common.getQuote}
               <ArrowRight className={`h-4 w-4 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
             </Button>
           </Link>
@@ -34,15 +34,15 @@ const CapabilitiesSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {capabilities.map((capability) => (
-            <div key={capability.title} className="group p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-glow">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 mb-4 transition-colors group-hover:bg-primary/20">
-                <capability.icon className="h-6 w-6 text-primary" />
+            <div key={capability.title} className="group p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-glow hover:-translate-y-1 cursor-default">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 mb-4 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110 group-hover:rotate-3">
+                <capability.icon className="h-6 w-6 text-primary transition-transform duration-300 group-hover:scale-110" />
               </div>
-              <h3 className="font-display text-lg font-semibold text-foreground mb-2">{capability.title}</h3>
+              <h3 className="font-display text-lg font-semibold text-foreground mb-2 transition-colors duration-300 group-hover:text-primary">{capability.title}</h3>
               <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{capability.description}</p>
               <div className="flex flex-wrap gap-2">
                 {capability.materials.map((material) => (
-                  <span key={material} className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">{material}</span>
+                  <span key={material} className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground transition-all duration-200 hover:bg-primary/20 hover:text-primary">{material}</span>
                 ))}
               </div>
             </div>

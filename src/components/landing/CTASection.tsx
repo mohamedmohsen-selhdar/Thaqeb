@@ -24,8 +24,8 @@ const CTASection = () => {
                 <ArrowRight className={`h-5 w-5 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
               </Button>
             </Link>
-            <Link to="/contact">
-              <Button variant="outline-primary" size="xl">{t.cta.talkToSales}</Button>
+            <Link to="/login">
+              <Button variant="outline-primary" size="xl">{t.common.signIn}</Button>
             </Link>
           </div>
         </div>

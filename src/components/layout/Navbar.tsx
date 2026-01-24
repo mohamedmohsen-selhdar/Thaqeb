@@ -14,9 +14,6 @@ const Navbar = () => {
 
   const navLinks = [
     { path: "/", label: t.common.home },
-    { path: "/how-it-works", label: t.nav.howItWorks },
-    { path: "/capabilities", label: t.nav.capabilities },
-    { path: "/for-suppliers", label: t.nav.forSuppliers },
   ];
 
   return (
