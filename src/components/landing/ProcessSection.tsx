@@ -30,16 +30,16 @@ const ProcessSection = () => {
           <div className="hidden lg:block absolute top-16 left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
-              <div key={step.title} className="relative flex flex-col items-center text-center group">
-                <div className="absolute -top-2 -right-2 lg:top-0 lg:right-auto lg:-translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground z-10">
+              <div key={step.title} className="relative flex flex-col items-center text-center group cursor-default">
+                <div className="absolute -top-2 -right-2 lg:top-0 lg:right-auto lg:-translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground z-10 transition-transform duration-300 group-hover:scale-110">
                   {index + 1}
                 </div>
                 <div className="relative mb-6">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-card border border-border transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-glow">
-                    <step.icon className="h-8 w-8 text-primary" />
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-card border border-border transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-glow group-hover:-translate-y-1 group-hover:bg-card/80">
+                    <step.icon className="h-8 w-8 text-primary transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
-                <h3 className="font-display text-lg font-semibold text-foreground mb-2">{step.title}</h3>
+                <h3 className="font-display text-lg font-semibold text-foreground mb-2 transition-colors duration-300 group-hover:text-primary">{step.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
             ))}
@@ -48,8 +48,8 @@ const ProcessSection = () => {
 
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {stats.map((stat) => (
-            <div key={stat.label} className="text-center p-6 rounded-xl bg-card/50 border border-border">
-              <p className="font-display text-3xl font-bold text-primary mb-1">{stat.value}</p>
+            <div key={stat.label} className="text-center p-6 rounded-xl bg-card/50 border border-border transition-all duration-300 hover:border-primary/30 hover:shadow-glow hover:-translate-y-1 cursor-default group">
+              <p className="font-display text-3xl font-bold text-primary mb-1 transition-transform duration-300 group-hover:scale-110">{stat.value}</p>
               <p className="text-sm text-muted-foreground">{stat.label}</p>
             </div>
           ))}

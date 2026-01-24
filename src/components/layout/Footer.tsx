@@ -6,18 +6,16 @@ const Footer = () => {
   const { t } = useLanguage();
 
   const services = [
-    { label: t.capabilities.items.cnc.title, path: "/capabilities" },
-    { label: t.capabilities.items.sheetMetal.title, path: "/capabilities" },
-    { label: t.capabilities.items.printing3d.title, path: "/capabilities" },
-    { label: t.capabilities.items.wireCutting.title, path: "/capabilities" },
-    { label: t.capabilities.items.dieCasting.title, path: "/capabilities" },
+    { label: t.capabilities.items.cnc.title },
+    { label: t.capabilities.items.sheetMetal.title },
+    { label: t.capabilities.items.printing3d.title },
+    { label: t.capabilities.items.wireCutting.title },
+    { label: t.capabilities.items.dieCasting.title },
   ];
 
   const companyLinks = [
-    { label: t.footer.aboutUs, path: "/about" },
-    { label: t.nav.forSuppliers, path: "/for-suppliers" },
-    { label: t.footer.qualityAssurance, path: "/quality" },
-    { label: t.footer.careers, path: "/careers" },
+    { label: t.footer.aboutUs },
+    { label: t.footer.qualityAssurance },
   ];
 
   return (
@@ -45,9 +43,9 @@ const Footer = () => {
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service.label}>
-                  <Link to={service.path} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  <span className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-default">
                     {service.label}
-                  </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -59,9 +57,9 @@ const Footer = () => {
             <ul className="space-y-2">
               {companyLinks.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.path} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  <span className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-default">
                     {link.label}
-                  </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -92,12 +90,12 @@ const Footer = () => {
             © {new Date().getFullYear()} Fabrishare. {t.footer.allRightsReserved}
           </p>
           <div className="flex gap-6">
-            <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <span className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-default">
               {t.footer.privacyPolicy}
-            </Link>
-            <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            </span>
+            <span className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-default">
               {t.footer.termsOfService}
-            </Link>
+            </span>
           </div>
         </div>
       </div>
