@@ -29,15 +29,18 @@ const AuthCallback = () => {
 
         setStatus("Setting up your account...");
 
-        // Check if user has an intended role from registration
+        // Check if user has an intended role from registration (stored before OAuth redirect)
         const intendedRole = localStorage.getItem("fabrishare_intended_role");
         localStorage.removeItem("fabrishare_intended_role");
 
+        // Wait for trigger to create profile/role records
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         if (intendedRole === "supplier") {
-          // Handle supplier registration for OAuth users
+          // New supplier registration via OAuth
           setStatus("Creating supplier profile...");
           
-          // Update role to supplier
+          // Update role to supplier (cannot be changed later)
           const { error: roleError } = await supabase
             .from("user_roles")
             .update({ role: "supplier" })
@@ -45,7 +48,6 @@ const AuthCallback = () => {
 
           if (roleError) {
             console.error("Error updating role:", roleError);
-            // Continue anyway, role might be default
           }
 
           // Create supplier record
@@ -59,32 +61,46 @@ const AuthCallback = () => {
             });
 
           if (supplierError && supplierError.code !== "23505") {
-            // Ignore duplicate key errors
             console.error("Error creating supplier:", supplierError);
           }
 
           toast.success("Welcome to Fabrishare! Please complete your workshop profile.");
           navigate("/supplier/dashboard");
+        } else if (intendedRole === "client") {
+          // New client registration via OAuth - role is already 'client' by default
+          toast.success("Welcome to Fabrishare!");
+          navigate("/client/dashboard");
         } else {
-          // Default client flow
-          // Check existing role
-          const { data: roleData } = await supabase
+          // Existing user login via OAuth - check their role and redirect accordingly
+          const { data: roleData, error: roleError } = await supabase
             .from("user_roles")
             .select("role")
             .eq("user_id", session.user.id)
             .single();
 
+          if (roleError) {
+            console.error("Error fetching role:", roleError);
+            // Default to client if role fetch fails
+            navigate("/client/dashboard");
+            return;
+          }
+
           const userRole = roleData?.role;
+          toast.success("Welcome back!");
 
-          toast.success("Welcome to Fabrishare!");
-
-          // Redirect based on role
-          if (userRole === "supplier") {
-            navigate("/supplier/dashboard");
-          } else if (userRole === "internal_ops" || userRole === "admin") {
-            navigate("/operations");
-          } else {
-            navigate("/dashboard");
+          // Redirect based on existing role
+          switch (userRole) {
+            case "supplier":
+              navigate("/supplier/dashboard");
+              break;
+            case "internal_ops":
+            case "admin":
+              navigate("/admin/dashboard");
+              break;
+            case "client":
+            default:
+              navigate("/client/dashboard");
+              break;
           }
         }
       } catch (error) {

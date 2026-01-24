@@ -3,11 +3,14 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Factory, Mail, Lock, User, Building2, ArrowRight, Phone, Loader2 } from "lucide-react";
+import { Factory, Mail, Lock, User, Building2, ArrowRight, Phone, Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSupplierRegistration } from "@/hooks/useSupplierRegistration";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { getDashboardForRole } from "@/components/ProtectedRoute";
+
+type UserType = "client" | "supplier";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -15,11 +18,23 @@ const Register = () => {
   const { signUp, user, role, isLoading: authLoading } = useAuth();
   const { registerSupplier, isRegistering } = useSupplierRegistration();
   
-  // Get role from URL param, default to client
-  const roleFromUrl = searchParams.get("role");
-  const initialUserType = roleFromUrl === "supplier" ? "supplier" : "client";
+  // Step 1: Role selection, Step 2: Registration form
+  const [step, setStep] = useState<1 | 2>(1);
   
-  const [userType, setUserType] = useState<"client" | "supplier">(initialUserType);
+  // Get role from URL param if coming from landing page CTAs
+  const roleFromUrl = searchParams.get("role") as UserType | null;
+  const [selectedRole, setSelectedRole] = useState<UserType | null>(
+    roleFromUrl === "supplier" ? "supplier" : roleFromUrl === "client" ? "client" : null
+  );
+  
+  // If role is in URL, skip to step 2
+  useEffect(() => {
+    if (roleFromUrl === "supplier" || roleFromUrl === "client") {
+      setSelectedRole(roleFromUrl);
+      setStep(2);
+    }
+  }, [roleFromUrl]);
+  
   const [formData, setFormData] = useState({
     fullName: "",
     companyName: "",
@@ -33,22 +48,27 @@ const Register = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && role && !authLoading) {
-      if (role === "supplier") {
-        navigate("/supplier/dashboard");
-      } else if (role === "internal_ops" || role === "admin") {
-        navigate("/operations");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate(getDashboardForRole(role));
     }
   }, [user, role, authLoading, navigate]);
 
+  const handleRoleSelect = (role: UserType) => {
+    setSelectedRole(role);
+    setStep(2);
+  };
+
+  const handleBack = () => {
+    setStep(1);
+    setSelectedRole(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedRole) return;
+    
     setIsLoading(true);
 
-    if (userType === "supplier") {
-      // Use supplier registration flow
+    if (selectedRole === "supplier") {
       const result = await registerSupplier({
         email: formData.email,
         password: formData.password,
@@ -65,7 +85,6 @@ const Register = () => {
 
       navigate("/supplier/dashboard");
     } else {
-      // Standard client registration
       const { error } = await signUp(formData.email, formData.password, {
         full_name: formData.fullName,
         company_name: formData.companyName,
@@ -79,7 +98,7 @@ const Register = () => {
       }
 
       toast.success("Account created successfully!");
-      navigate("/dashboard");
+      navigate("/client/dashboard");
     }
 
     setIsLoading(false);
@@ -90,10 +109,12 @@ const Register = () => {
   };
 
   const handleGoogleSignUp = async () => {
+    if (!selectedRole) return;
+    
     setIsGoogleLoading(true);
     try {
       // Store the intended role in localStorage for post-OAuth handling
-      localStorage.setItem("fabrishare_intended_role", userType);
+      localStorage.setItem("fabrishare_intended_role", selectedRole);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -124,6 +145,84 @@ const Register = () => {
 
   const isSubmitting = isLoading || isRegistering || isGoogleLoading;
 
+  // Step 1: Role Selection
+  if (step === 1) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-lg">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 mb-8 justify-center group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-strong group-hover:scale-105">
+              <Factory className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="font-display text-2xl font-bold text-foreground">
+              Fabri<span className="text-primary">share</span>
+            </span>
+          </Link>
+
+          <div className="text-center mb-10">
+            <h1 className="font-display text-3xl font-bold text-foreground mb-2">
+              How will you use Fabrishare?
+            </h1>
+            <p className="text-muted-foreground">
+              Select your role to get started. This cannot be changed later.
+            </p>
+          </div>
+
+          <div className="grid gap-4">
+            <button
+              onClick={() => handleRoleSelect("client")}
+              className="w-full p-6 rounded-xl border-2 border-border bg-card text-left transition-all duration-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                  <User className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-1">
+                    I Need Parts Fabricated
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Submit quote requests, track orders, and get quality parts manufactured.
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleRoleSelect("supplier")}
+              className="w-full p-6 rounded-xl border-2 border-border bg-card text-left transition-all duration-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                  <Factory className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-1">
+                    I Own a Workshop
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Manage your machines, receive job requests, and grow your business.
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+              </div>
+            </button>
+          </div>
+
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary hover:underline font-medium">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Registration Form
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Branding */}
@@ -139,13 +238,13 @@ const Register = () => {
             Join Egypt's Manufacturing Revolution
           </h2>
           <p className="text-muted-foreground mb-8">
-            {userType === "supplier" 
+            {selectedRole === "supplier" 
               ? "Grow your workshop's business by connecting with clients who need quality manufacturing."
               : "Connect with certified workshops and get quality parts manufactured on demand."}
           </p>
 
           <div className="space-y-4">
-            {userType === "supplier" ? (
+            {selectedRole === "supplier" ? (
               <>
                 {[
                   "Access new client opportunities",
@@ -189,6 +288,17 @@ const Register = () => {
       {/* Right Panel - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
+          {/* Back Button */}
+          {!roleFromUrl && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Change role
+            </button>
+          )}
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-8 group">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-strong group-hover:scale-105">
@@ -199,40 +309,27 @@ const Register = () => {
             </span>
           </Link>
 
+          {/* Role Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            {selectedRole === "supplier" ? (
+              <>
+                <Factory className="h-4 w-4" />
+                Registering as Workshop
+              </>
+            ) : (
+              <>
+                <User className="h-4 w-4" />
+                Registering as Client
+              </>
+            )}
+          </div>
+
           <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-            Create an account
+            Create your account
           </h1>
           <p className="text-muted-foreground mb-8">
             Get started with Fabrishare today
           </p>
-
-          {/* User Type Toggle */}
-          <div className="flex gap-2 p-1 bg-muted rounded-lg mb-8">
-            <button
-              type="button"
-              onClick={() => setUserType("client")}
-              disabled={isSubmitting}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
-                userType === "client"
-                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
-              }`}
-            >
-              I need parts
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType("supplier")}
-              disabled={isSubmitting}
-              className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
-                userType === "supplier"
-                  ? "bg-card text-foreground shadow-sm scale-[1.02]"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
-              }`}
-            >
-              I'm a workshop
-            </button>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
@@ -254,13 +351,13 @@ const Register = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="companyName">
-                  {userType === "supplier" ? "Workshop Name" : "Company Name"}
+                  {selectedRole === "supplier" ? "Workshop Name" : "Company Name"}
                 </Label>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="companyName"
-                    placeholder={userType === "supplier" ? "ABC Workshop" : "ABC Industries"}
+                    placeholder={selectedRole === "supplier" ? "ABC Workshop" : "ABC Industries"}
                     value={formData.companyName}
                     onChange={handleChange("companyName")}
                     className="pl-10"
@@ -331,7 +428,7 @@ const Register = () => {
                 </>
               ) : (
                 <>
-                  Create {userType === "supplier" ? "Supplier" : ""} Account
+                  Create Account
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </>
               )}

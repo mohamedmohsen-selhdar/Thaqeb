@@ -97,7 +97,7 @@ const ClientDashboard = () => {
 
         <nav className="flex-1 p-4 space-y-2">
           <Link
-            to="/dashboard"
+            to="/client/dashboard"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-all duration-200 hover:bg-primary/20"
           >
             <Package className="h-5 w-5" />
@@ -111,7 +111,7 @@ const ClientDashboard = () => {
             New Quote
           </Link>
           <Link
-            to="/dashboard/settings"
+            to="/client/settings"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
           >
             <Settings className="h-5 w-5" />

@@ -4,7 +4,21 @@ import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: string[];
+  allowedRoles: string[];
+}
+
+// Returns the correct dashboard path based on user role
+function getDashboardForRole(role: string | null): string {
+  switch (role) {
+    case "supplier":
+      return "/supplier/dashboard";
+    case "internal_ops":
+    case "admin":
+      return "/admin/dashboard";
+    case "client":
+    default:
+      return "/client/dashboard";
+  }
 }
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
@@ -18,13 +32,18 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     );
   }
 
+  // Not logged in → redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
-    return <Navigate to="/" replace />;
+  // Role doesn't match allowed roles → redirect to their own dashboard
+  if (role && !allowedRoles.includes(role)) {
+    const correctDashboard = getDashboardForRole(role);
+    return <Navigate to={correctDashboard} replace />;
   }
 
   return <>{children}</>;
 }
+
+export { getDashboardForRole };
