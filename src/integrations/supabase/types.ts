@@ -544,6 +544,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      register_as_supplier: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "client" | "supplier" | "internal_ops" | "admin"

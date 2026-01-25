@@ -38,29 +38,27 @@ export function useQuoteRequests() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const uploadFiles = async (files: File[]): Promise<string[]> => {
-    const uploadedUrls: string[] = [];
+    const uploadedPaths: string[] = [];
 
     for (const file of files) {
       const fileExt = file.name.split(".").pop();
-      const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      // Store relative path, not public URL - for security
+      const filePath = `${user?.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("cad-drawings")
-        .upload(fileName, file);
+        .upload(filePath, file);
 
       if (uploadError) {
         console.error("Error uploading file:", uploadError);
         throw new Error(`Failed to upload ${file.name}`);
       }
 
-      const { data: urlData } = supabase.storage
-        .from("cad-drawings")
-        .getPublicUrl(fileName);
-
-      uploadedUrls.push(urlData.publicUrl);
+      // Store the relative path only - signed URLs will be generated on-demand
+      uploadedPaths.push(filePath);
     }
 
-    return uploadedUrls;
+    return uploadedPaths;
   };
 
   const submitQuoteRequest = async (
