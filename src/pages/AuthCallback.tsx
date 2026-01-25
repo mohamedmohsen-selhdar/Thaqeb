@@ -40,14 +40,14 @@ const AuthCallback = () => {
           // New supplier registration via OAuth
           setStatus("Creating supplier profile...");
           
-          // Update role to supplier (cannot be changed later)
-          const { error: roleError } = await supabase
-            .from("user_roles")
-            .update({ role: "supplier" })
-            .eq("user_id", session.user.id);
+          // Update role to supplier using secure RPC function
+          const { data: roleUpdated, error: roleError } = await supabase.rpc('register_as_supplier');
 
-          if (roleError) {
+          if (roleError || !roleUpdated) {
             console.error("Error updating role:", roleError);
+            toast.error("Failed to set up supplier account. Please contact support.");
+            navigate("/login");
+            return;
           }
 
           // Create supplier record

@@ -46,15 +46,12 @@ export function useSupplierRegistration() {
       // Wait a moment for the trigger to create the profile
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // 2. Update user role to supplier
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .update({ role: "supplier" })
-        .eq("user_id", authData.user.id);
+      // 2. Update user role to supplier using secure RPC function
+      const { data: roleUpdated, error: roleError } = await supabase.rpc('register_as_supplier');
 
-      if (roleError) {
+      if (roleError || !roleUpdated) {
         console.error("Role update error:", roleError);
-        // Don't fail the registration, the user can contact support
+        return { success: false, error: "Failed to update role to supplier. Please contact support." };
       }
 
       // 3. Create supplier record
