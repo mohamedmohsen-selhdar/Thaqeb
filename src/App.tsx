@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ThemeProvider } from "@/components/theme-provider";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -21,42 +22,44 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <LanguageProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/get-quote" element={
-                <ProtectedRoute allowedRoles={['client']}>
-                  <GetQuote />
-                </ProtectedRoute>
-              } />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/client/dashboard" element={
-                <ProtectedRoute allowedRoles={['client']}>
-                  <ClientDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/supplier/dashboard" element={
-                <ProtectedRoute allowedRoles={['supplier']}>
-                  <SupplierDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/dashboard" element={
-                <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
-                  <OperationsDashboard />
-                </ProtectedRoute>
-              } />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </LanguageProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <LanguageProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/get-quote" element={
+                  <ProtectedRoute allowedRoles={['client']}>
+                    <GetQuote />
+                  </ProtectedRoute>
+                } />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/client/dashboard" element={
+                  <ProtectedRoute allowedRoles={['client']}>
+                    <ClientDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/supplier/dashboard" element={
+                  <ProtectedRoute allowedRoles={['supplier']}>
+                    <SupplierDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/dashboard" element={
+                  <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
+                    <OperationsDashboard />
+                  </ProtectedRoute>
+                } />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

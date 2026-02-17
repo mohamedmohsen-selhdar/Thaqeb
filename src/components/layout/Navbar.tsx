@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Factory } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,11 +37,10 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive(link.path)
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive(link.path)
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -49,6 +49,7 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
+            <ModeToggle />
             <LanguageSwitcher />
             <Link to="/login">
               <Button variant="ghost" size="sm">
@@ -64,6 +65,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
+            <ModeToggle />
             <LanguageSwitcher />
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -83,11 +85,10 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                    isActive(link.path)
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
+                  className={`px-4 py-3 text-sm font-medium rounded-md transition-colors ${isActive(link.path)
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
                 >
                   {link.label}
                 </Link>
