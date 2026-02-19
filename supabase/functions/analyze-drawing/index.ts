@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -58,7 +59,47 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     console.log("Authenticated user:", userId);
 
-    const { fileName, fileType, fileSize, fileContent } = await req.json();
+    const rawData = await req.json();
+
+    // Validate and sanitize inputs to prevent prompt injection and malformed data
+    const AnalyzeRequestSchema = z.object({
+      fileName: z
+        .string()
+        .min(1, "File name is required")
+        .max(255, "File name too long")
+        .regex(/^[a-zA-Z0-9._\-\s]+$/, "File name contains invalid characters"),
+      fileType: z.enum([
+        "application/pdf",
+        "image/vnd.dxf",
+        "application/dxf",
+        "model/step",
+        "application/step",
+        "model/stl",
+        "application/stl",
+        "model/iges",
+        "application/iges",
+        "application/acad",
+        "application/octet-stream",
+      ]),
+      fileSize: z
+        .number()
+        .int()
+        .min(1, "File size must be positive")
+        .max(52428800, "File size exceeds 50MB limit"),
+      fileContent: z.string().optional(),
+    });
+
+    const validationResult = AnalyzeRequestSchema.safeParse(rawData);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ error: "Invalid input", details: validationResult.error.issues }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { fileName, fileType, fileSize } = validationResult.data;
+    // Sanitize fileName as defense-in-depth to prevent prompt injection
+    const safeFileName = fileName.replace(/[\n\r]/g, " ").substring(0, 100);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -82,7 +123,7 @@ Guidelines:
 
     const userPrompt = `Analyze this CAD file and extract manufacturing specifications:
 
-File Name: ${fileName}
+File Name: ${safeFileName}
 File Type: ${fileType}
 File Size: ${(fileSize / 1024 / 1024).toFixed(2)} MB
 
