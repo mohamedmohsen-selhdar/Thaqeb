@@ -1,21 +1,23 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import HeroSection from "@/components/landing/HeroSection";
-import ProcessSection from "@/components/landing/ProcessSection";
-import CapabilitiesSection from "@/components/landing/CapabilitiesSection";
-import SupplierCTASection from "@/components/landing/SupplierCTASection";
-import CTASection from "@/components/landing/CTASection";
+import CinematicHero from "@/components/landing/CinematicHero";
+import CompanyMarquee from "@/components/landing/CompanyMarquee";
+import CapabilitiesTabs from "@/components/landing/CapabilitiesTabs";
+import StatsSection from "@/components/landing/StatsSection";
+import FlipCardSection from "@/components/landing/FlipCardSection";
+import WavyHighlightSection from "@/components/landing/WavyHighlightSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background selection:bg-primary selection:text-white">
       <Navbar />
       <main>
-        <HeroSection />
-        <ProcessSection />
-        <CapabilitiesSection />
-        <SupplierCTASection />
-        <CTASection />
+        <CinematicHero />
+        <CompanyMarquee />
+        <FlipCardSection />
+        <CapabilitiesTabs />
+        <WavyHighlightSection />
+        <StatsSection />
       </main>
       <Footer />
     </div>

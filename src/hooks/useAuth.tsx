@@ -61,16 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle(); // Use maybeSingle to not throw strict error if no row exists
 
-      if (roleError) {
+      if (roleError && roleError.code !== 'PGRST116') {
         console.error("Error fetching role:", roleError);
-        return;
+        // Fallback to client if error occurs
+        setRole("client");
+      } else {
+        setRole((roleData?.role as AppRole) || "client");
       }
-
-      setRole(roleData?.role as AppRole);
     } catch (error) {
       console.error("Error in fetchProfile:", error);
+      setRole("client"); // Safe fallback
     }
   };
 
@@ -88,8 +90,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          // Use setTimeout to avoid potential deadlocks
-          setTimeout(() => fetchProfile(session.user.id), 0);
+          // Await fetchProfile to ensure role and profile are loaded before dropping the loading shield
+          await fetchProfile(session.user.id);
         } else {
           setProfile(null);
           setRole(null);
@@ -100,12 +102,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        fetchProfile(session.user.id);
+        await fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+        setRole(null);
       }
 
       setIsLoading(false);

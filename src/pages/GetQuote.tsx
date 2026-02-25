@@ -11,12 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
-  Factory, 
-  Upload, 
-  FileText, 
-  X, 
-  ArrowRight, 
+import {
+  Factory,
+  Upload,
+  FileText,
+  X,
+  ArrowRight,
   ArrowLeft,
   CheckCircle2,
   Clock,
@@ -64,7 +64,7 @@ const GetQuote = () => {
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useAuth();
   const { submitQuoteRequest, isSubmitting } = useQuoteRequests();
-  
+
   const [step, setStep] = useState(1);
   const [files, setFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
@@ -93,7 +93,7 @@ const GetQuote = () => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       setFiles((prev) => [...prev, ...newFiles]);
-      
+
       // Automatically analyze the first uploaded file
       if (newFiles.length > 0 && !analysisResult) {
         await analyzeDrawing(newFiles[0]);
@@ -113,7 +113,7 @@ const GetQuote = () => {
       ...prev,
       process: analysis.suggestedProcess,
       material: analysis.suggestedMaterial,
-      notes: prev.notes 
+      notes: prev.notes
         ? `${prev.notes}\n\n${t.getQuote.additionalNotes}: ${analysis.notes.join(". ")}`
         : analysis.notes.join(". "),
     }));
@@ -136,7 +136,7 @@ const GetQuote = () => {
     }
 
     // Generate a title from the first file name or process
-    const title = formData.title || 
+    const title = formData.title ||
       (files.length > 0 ? files[0].name.replace(/\.[^/.]+$/, "") : formData.process) ||
       "Quote Request";
 
@@ -154,7 +154,7 @@ const GetQuote = () => {
     );
 
     if (result.success) {
-      navigate("/dashboard");
+      navigate("/client/dashboard");
     } else {
       toast.error(result.error || "Failed to submit quote request");
     }
@@ -211,11 +211,10 @@ const GetQuote = () => {
             {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center gap-2">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full font-semibold transition-all ${
-                    step >= s
+                  className={`flex h-10 w-10 items-center justify-center rounded-full font-semibold transition-all ${step >= s
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   {step > s ? <CheckCircle2 className="h-5 w-5" /> : s}
                 </div>
@@ -478,7 +477,7 @@ const GetQuote = () => {
                           {t.getQuote.contactTitle}
                         </h2>
                         <p className="text-muted-foreground">
-                          {user 
+                          {user
                             ? (isRTL ? "راجع طلبك وأرسله" : "Review your request and submit")
                             : t.getQuote.contactSubtitle}
                         </p>
@@ -521,7 +520,7 @@ const GetQuote = () => {
                         /* Not logged in - Prompt to sign in */
                         <div className="text-center py-8">
                           <p className="text-muted-foreground mb-4">
-                            {isRTL 
+                            {isRTL
                               ? "يرجى تسجيل الدخول لإرسال طلب عرض السعر"
                               : "Please sign in to submit your quote request"}
                           </p>
@@ -543,9 +542,9 @@ const GetQuote = () => {
                           {t.common.back}
                         </Button>
                         {user && (
-                          <Button 
-                            type="submit" 
-                            variant="hero" 
+                          <Button
+                            type="submit"
+                            variant="hero"
                             className="flex-1"
                             disabled={isSubmitting}
                           >

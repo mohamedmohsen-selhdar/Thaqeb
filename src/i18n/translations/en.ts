@@ -29,6 +29,11 @@ export const en = {
     howItWorks: "How It Works",
     capabilities: "Capabilities",
     forSuppliers: "For Suppliers",
+    caseStudies: "Case Studies",
+    careers: "Careers",
+    services: "Our Services",
+    login: "Sign In",
+    getQuote: "Get Instant Quote",
   },
 
   // Hero Section

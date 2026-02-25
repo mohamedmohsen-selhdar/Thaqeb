@@ -12,10 +12,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import GetQuote from "./pages/GetQuote";
 import ClientDashboard from "./pages/dashboard/ClientDashboard";
+import { VoiceAgentWidget } from "@/components/ui/voice-agent-widget";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 import OperationsDashboard from "./pages/dashboard/OperationsDashboard";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+import CaseStudies from "./pages/CaseStudies";
+import Careers from "./pages/Careers";
+import OurServices from "./pages/OurServices";
 
 const queryClient = new QueryClient();
 
@@ -32,11 +36,10 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/get-quote" element={
-                  <ProtectedRoute allowedRoles={['client']}>
-                    <GetQuote />
-                  </ProtectedRoute>
-                } />
+                <Route path="/case-studies" element={<CaseStudies />} />
+                <Route path="/careers" element={<Careers />} />
+                <Route path="/services" element={<OurServices />} />
+                <Route path="/get-quote" element={<GetQuote />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/client/dashboard" element={
                   <ProtectedRoute allowedRoles={['client']}>
@@ -56,6 +59,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <VoiceAgentWidget />
             </BrowserRouter>
           </TooltipProvider>
         </LanguageProvider>

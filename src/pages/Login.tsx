@@ -11,7 +11,7 @@ import { toast } from "sonner";
 const Login = () => {
   const navigate = useNavigate();
   const { signIn, user, role, isLoading: authLoading } = useAuth();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ const Login = () => {
       } else if (role === "internal_ops" || role === "admin") {
         navigate("/operations");
       } else {
-        navigate("/dashboard");
+        navigate("/client/dashboard");
       }
     }
   }, [user, role, authLoading, navigate]);
@@ -210,7 +210,7 @@ const Login = () => {
       <div className="hidden lg:flex w-1/2 bg-card border-l border-border items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-30" />
         <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-[100px]" />
-        
+
         <div className="relative z-10 max-w-md text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 mx-auto mb-8">
             <Factory className="h-10 w-10 text-primary" />
@@ -219,7 +219,7 @@ const Login = () => {
             Egypt's Manufacturing Marketplace
           </h2>
           <p className="text-muted-foreground">
-            Connect with certified workshops, track production in real-time, 
+            Connect with certified workshops, track production in real-time,
             and receive quality-assured parts delivered to your door.
           </p>
         </div>

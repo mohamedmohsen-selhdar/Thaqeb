@@ -33,7 +33,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     // Update document direction and lang attribute
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = language;
-    
+
     // Update body class for RTL-specific styles
     if (language === "ar") {
       document.body.classList.add("rtl");

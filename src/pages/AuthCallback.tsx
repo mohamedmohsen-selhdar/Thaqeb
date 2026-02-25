@@ -6,112 +6,141 @@ import { toast } from "sonner";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
-  const [status, setStatus] = useState("Processing authentication...");
+  const [status, setStatus] = useState("Finalizing authentication...");
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        // Get the session from the URL callback
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          toast.error("Authentication failed");
-          navigate("/login");
-          return;
+    // Handle the OAuth callback
+    const handleAuthChange = async () => {
+      // Set up a listener for auth state changes (this catches the session update from the hash)
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          await processSession(session);
+        } else if (event === 'SIGNED_OUT') {
+          // If we get a signed out event on this page, it might mean auth failed or user is just arriving
+          // We can't assume failure immediately, but if we don't get 'SIGNED_IN' soon, the timeout will catch it.
         }
+      });
 
-        if (!session?.user) {
-          toast.error("No user session found");
-          navigate("/login");
-          return;
-        }
-
-        setStatus("Setting up your account...");
-
-        // Check if user has an intended role from registration (stored before OAuth redirect)
-        const intendedRole = localStorage.getItem("fabrishare_intended_role");
-        localStorage.removeItem("fabrishare_intended_role");
-
-        // Wait for trigger to create profile/role records
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        if (intendedRole === "supplier") {
-          // New supplier registration via OAuth
-          setStatus("Creating supplier profile...");
-          
-          // Update role to supplier using secure RPC function
-          const { data: roleUpdated, error: roleError } = await supabase.rpc('register_as_supplier');
-
-          if (roleError || !roleUpdated) {
-            console.error("Error updating role:", roleError);
-            toast.error("Failed to set up supplier account. Please contact support.");
-            navigate("/login");
-            return;
-          }
-
-          // Create supplier record
-          const { error: supplierError } = await supabase
-            .from("suppliers")
-            .insert({
-              user_id: session.user.id,
-              company_name: session.user.user_metadata?.full_name || "New Workshop",
-              contact_email: session.user.email || "",
-              is_active: true,
-            });
-
-          if (supplierError && supplierError.code !== "23505") {
-            console.error("Error creating supplier:", supplierError);
-          }
-
-          toast.success("Welcome to Fabrishare! Please complete your workshop profile.");
-          navigate("/supplier/dashboard");
-        } else if (intendedRole === "client") {
-          // New client registration via OAuth - role is already 'client' by default
-          toast.success("Welcome to Fabrishare!");
-          navigate("/client/dashboard");
-        } else {
-          // Existing user login via OAuth - check their role and redirect accordingly
-          const { data: roleData, error: roleError } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .single();
-
-          if (roleError) {
-            console.error("Error fetching role:", roleError);
-            // Default to client if role fetch fails
-            navigate("/client/dashboard");
-            return;
-          }
-
-          const userRole = roleData?.role;
-          toast.success("Welcome back!");
-
-          // Redirect based on existing role
-          switch (userRole) {
-            case "supplier":
-              navigate("/supplier/dashboard");
-              break;
-            case "internal_ops":
-            case "admin":
-              navigate("/admin/dashboard");
-              break;
-            case "client":
-            default:
-              navigate("/client/dashboard");
-              break;
-          }
-        }
-      } catch (error) {
-        console.error("Auth callback error:", error);
-        toast.error("Something went wrong during authentication");
+      // Also try to get the session immediately in case it's already established
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Session get error:", error);
+        toast.error("Authentication error: " + error.message);
         navigate("/login");
+        return;
       }
+
+      if (session) {
+        await processSession(session);
+      } else {
+        // Fallback: Check if there's an error in the URL hash
+        const hash = window.location.hash;
+        if (hash && hash.includes('error=')) {
+          const params = new URLSearchParams(hash.substring(1)); // remove #
+          const errorDescription = params.get('error_description');
+          toast.error(errorDescription || "Authentication failed");
+          navigate("/login");
+        }
+      }
+
+      return () => {
+        subscription.unsubscribe();
+      };
     };
 
-    handleAuthCallback();
+    handleAuthChange();
+
+    // Safety timeout - if nothing happens after 5 seconds, redirect
+    const timeout = setTimeout(() => {
+      navigate("/login");
+      toast.error("Authentication timed out. Please try again.");
+    }, 8000);
+
+    return () => clearTimeout(timeout);
   }, [navigate]);
+
+  const processSession = async (session: any) => {
+    setStatus("Setting up your account...");
+    const user = session.user;
+
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    // Check if user has an intended role from registration (stored before OAuth redirect)
+    const intendedRole = localStorage.getItem("fabrishare_intended_role");
+    localStorage.removeItem("fabrishare_intended_role");
+
+    try {
+      if (intendedRole === "supplier") {
+        // Supplier Setup
+        setStatus("Creating supplier profile...");
+
+        // Check if already is a supplier to avoid errors
+        const { data: existingRole } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .single();
+
+        if (existingRole?.role !== 'supplier') {
+          // Call RPC to update role
+          const { error: roleError } = await supabase.rpc('register_as_supplier');
+          if (roleError) {
+            console.error("Error setting role:", roleError);
+            // Allow continuing even if this fails, might handle manually
+          }
+        }
+
+        // Create/Check supplier profile
+        const { error: profileError } = await supabase
+          .from("suppliers")
+          .insert({
+            user_id: user.id,
+            company_name: user.user_metadata?.full_name || "New Workshop",
+            contact_email: user.email || "",
+            is_active: true,
+          });
+
+        if (profileError && profileError.code !== "23505") { // 23505 is unique violation (already exists)
+          console.error("Supplier profile error:", profileError);
+        }
+
+        toast.success("Welcome to Fabrishare!");
+        navigate("/supplier/dashboard");
+
+      } else if (intendedRole === "client") {
+        // Client Setup (Default)
+        toast.success("Welcome to Fabrishare!");
+        navigate("/client/dashboard");
+
+      } else {
+        // Generic Login (Role detection)
+        const { data: roleData, error: roleError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .single();
+
+        if (roleError || !roleData) {
+          // Default to client
+          navigate("/client/dashboard");
+        } else {
+          switch (roleData.role) {
+            case "supplier": navigate("/supplier/dashboard"); break;
+            case "internal_ops":
+            case "admin": navigate("/admin/dashboard"); break;
+            case "client":
+            default: navigate("/client/dashboard"); break;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Auth process error:", error);
+      navigate("/client/dashboard"); // Fallback
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background">

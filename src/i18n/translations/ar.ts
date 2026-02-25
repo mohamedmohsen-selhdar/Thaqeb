@@ -31,6 +31,11 @@ export const ar: TranslationKeys = {
     howItWorks: "كيف يعمل",
     capabilities: "القدرات",
     forSuppliers: "للموردين",
+    caseStudies: "دراسات حالة",
+    careers: "وظائف",
+    services: "خدماتنا",
+    login: "تسجيل الدخول",
+    getQuote: "اطلب تسعير",
   },
 
   // Hero Section

@@ -1,3 +1,12 @@
+---
+title: Fabrishare
+emoji: 🏭
+colorFrom: blue
+colorTo: gray
+sdk: docker
+pinned: false
+---
+
 # Welcome to your Lovable project
 
 ## Project info

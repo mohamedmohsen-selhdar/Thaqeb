@@ -27,38 +27,49 @@ export function useDrawingAnalysis() {
     setAnalysisResult(null);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-drawing`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            fileName: file.name,
-            fileType: file.type || getFileTypeFromExtension(file.name),
-            fileSize: file.size,
-          }),
-        }
-      );
+      // MOCK AI ANALYSIS - Simulating a 3 second delay
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      if (!response.ok) {
-        const error = await response.json();
-        if (response.status === 429) {
-          toast.error("Rate limit exceeded. Please try again later.");
-        } else if (response.status === 402) {
-          toast.error("AI credits exhausted. Please add funds to continue.");
-        } else {
-          toast.error(error.error || "Failed to analyze drawing");
-        }
-        return null;
+      let mockAnalysis: AnalysisResult;
+
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+
+      if (fileExt === 'pdf') {
+        mockAnalysis = {
+          suggestedProcess: "Sheet Metal",
+          suggestedMaterial: "Aluminum 6061",
+          dimensions: {
+            length: "150mm",
+            width: "80mm",
+            height: "2mm",
+          },
+          features: ["Bends", "Holes", "Laser Cut Profiles"],
+          tolerances: ["±0.1mm general tolerance"],
+          surfaceFinish: "Anodized Clear",
+          complexity: "medium",
+          estimatedProductionTime: "3-5 days",
+          notes: ["Drawing indicates standard bend radii.", "Countersinks required on 4 mounting holes."]
+        };
+      } else {
+        mockAnalysis = {
+          suggestedProcess: "CNC Machining",
+          suggestedMaterial: "Stainless Steel 304",
+          dimensions: {
+            length: "45mm",
+            diameter: "20mm",
+          },
+          features: ["Turned profile", "Milled flats", "Internal threads"],
+          tolerances: ["±0.05mm critical", "±0.1mm general"],
+          surfaceFinish: "Machined finish",
+          complexity: "high",
+          estimatedProductionTime: "5-7 days",
+          notes: ["Tight tolerances on inner diameter.", "Requires 5-axis machining for the milled flats."]
+        };
       }
 
-      const data = await response.json();
-      setAnalysisResult(data.analysis);
+      setAnalysisResult(mockAnalysis);
       toast.success("Drawing analyzed successfully!");
-      return data.analysis;
+      return mockAnalysis;
     } catch (error) {
       console.error("Error analyzing drawing:", error);
       toast.error("Failed to analyze drawing. Please try again.");
