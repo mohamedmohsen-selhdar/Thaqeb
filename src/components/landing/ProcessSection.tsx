@@ -15,7 +15,7 @@ const ProcessSection = () => {
     { value: "48h", label: t.process.stats.quoteTime },
     { value: "95%", label: t.process.stats.onTime },
     { value: "<5%", label: t.process.stats.rework },
-    { value: "500+", label: t.process.stats.capacity },
+    { value: "500+", label: t.process.stats.suppliers },
   ];
 
   return (
