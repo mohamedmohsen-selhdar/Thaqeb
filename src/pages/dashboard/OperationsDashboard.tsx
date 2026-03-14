@@ -117,6 +117,13 @@ const OperationsDashboard = () => {
             <Settings className="h-5 w-5" />
             Settings
           </Link>
+          <Link
+            to="/admin/content"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200 hover:translate-x-1"
+          >
+            <FileText className="h-5 w-5" />
+            CMS Content
+          </Link>
         </nav>
 
         <div className="p-4 border-t border-border">

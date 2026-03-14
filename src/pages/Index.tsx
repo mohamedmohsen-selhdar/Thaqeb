@@ -6,6 +6,7 @@ import CapabilitiesTabs from "@/components/landing/CapabilitiesTabs";
 import StatsSection from "@/components/landing/StatsSection";
 import FlipCardSection from "@/components/landing/FlipCardSection";
 import WavyHighlightSection from "@/components/landing/WavyHighlightSection";
+import ArticlesSection from "@/components/landing/ArticlesSection";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
         <CapabilitiesTabs />
         <WavyHighlightSection />
         <StatsSection />
+        <ArticlesSection />
       </main>
       <Footer />
     </div>

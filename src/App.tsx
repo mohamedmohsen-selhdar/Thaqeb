@@ -15,6 +15,7 @@ import ClientDashboard from "./pages/dashboard/ClientDashboard";
 import { VoiceAgentWidget } from "@/components/ui/voice-agent-widget";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 import OperationsDashboard from "./pages/dashboard/OperationsDashboard";
+import ArticlesDashboard from "./pages/dashboard/ArticlesDashboard";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 import CaseStudies from "./pages/CaseStudies";
@@ -54,6 +55,11 @@ const App = () => (
                 <Route path="/admin/dashboard" element={
                   <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
                     <OperationsDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/content" element={
+                  <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
+                    <ArticlesDashboard />
                   </ProtectedRoute>
                 } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

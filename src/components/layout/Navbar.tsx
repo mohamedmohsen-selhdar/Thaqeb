@@ -46,7 +46,7 @@ const Navbar = () => {
               <Settings className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className={`font-display text-xl font-bold transition-colors ${scrolled ? "text-foreground" : "text-white"}`}>
-              Fabri<span className="text-primary italic">share</span>
+              Tha<span className="text-primary italic">qeb</span>
             </span>
           </Link>
 
