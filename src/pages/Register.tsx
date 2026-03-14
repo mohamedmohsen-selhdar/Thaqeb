@@ -114,7 +114,7 @@ const Register = () => {
     setIsGoogleLoading(true);
     try {
       // Store the intended role in localStorage for post-OAuth handling
-      localStorage.setItem("fabrishare_intended_role", selectedRole);
+      localStorage.setItem("thaqeb_intended_role", selectedRole);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -125,11 +125,11 @@ const Register = () => {
 
       if (error) {
         toast.error(error.message);
-        localStorage.removeItem("fabrishare_intended_role");
+        localStorage.removeItem("thaqeb_intended_role");
       }
     } catch (error) {
       toast.error("Failed to initiate Google sign-up");
-      localStorage.removeItem("fabrishare_intended_role");
+      localStorage.removeItem("thaqeb_intended_role");
     } finally {
       setIsGoogleLoading(false);
     }
@@ -162,7 +162,7 @@ const Register = () => {
 
           <div className="text-center mb-10">
             <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-              How will you use Fabrishare?
+              How will you use Thaqeb?
             </h1>
             <p className="text-muted-foreground">
               Select your role to get started. This cannot be changed later.
@@ -328,7 +328,7 @@ const Register = () => {
             Create your account
           </h1>
           <p className="text-muted-foreground mb-8">
-            Get started with Fabrishare today
+            Get started with Thaqeb today
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">

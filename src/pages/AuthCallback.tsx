@@ -69,8 +69,8 @@ const AuthCallback = () => {
     }
 
     // Check if user has an intended role from registration (stored before OAuth redirect)
-    const intendedRole = localStorage.getItem("fabrishare_intended_role");
-    localStorage.removeItem("fabrishare_intended_role");
+    const intendedRole = localStorage.getItem("thaqeb_intended_role");
+    localStorage.removeItem("thaqeb_intended_role");
 
     try {
       if (intendedRole === "supplier") {
@@ -107,12 +107,12 @@ const AuthCallback = () => {
           console.error("Supplier profile error:", profileError);
         }
 
-        toast.success("Welcome to Fabrishare!");
+        toast.success("Welcome to Thaqeb!");
         navigate("/supplier/dashboard");
 
       } else if (intendedRole === "client") {
         // Client Setup (Default)
-        toast.success("Welcome to Fabrishare!");
+        toast.success("Welcome to Thaqeb!");
         navigate("/client/dashboard");
 
       } else {

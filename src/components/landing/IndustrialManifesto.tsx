@@ -55,7 +55,7 @@ const IndustrialManifesto = () => {
                             <div>
                                 <h3 className="text-4xl font-display font-bold mb-4 uppercase italic">We Engineer.</h3>
                                 <p className="text-xl text-black/60 max-w-sm">
-                                    Fabrishare synchronizes design data with machine capacity, turning uncertainty into operational certainty.
+                                    Thaqeb synchronizes design data with machine capacity, turning uncertainty into operational certainty.
                                 </p>
                             </div>
                         </div>

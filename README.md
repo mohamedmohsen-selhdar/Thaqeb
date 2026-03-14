@@ -1,5 +1,5 @@
 ---
-title: Fabrishare
+title: Thaqeb
 emoji: 🏭
 colorFrom: blue
 colorTo: gray

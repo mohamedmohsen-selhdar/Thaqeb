@@ -60,7 +60,7 @@ export const en = {
 
   // Process Section
   process: {
-    title: "How Fabrishare Works",
+    title: "How Thaqeb Works",
     subtitle: "From upload to delivery, we manage every step of your manufacturing project",
     steps: {
       upload: {
@@ -144,7 +144,7 @@ export const en = {
   supplierCta: {
     badge: "For Workshops & Factories",
     title: "Join Egypt's Largest Manufacturing Network",
-    subtitle: "Partner with Fabrishare to receive qualified orders matched to your capabilities. We handle customer acquisition, project management, and quality assurance—you focus on what you do best.",
+    subtitle: "Partner with Thaqeb to receive qualified orders matched to your capabilities. We handle customer acquisition, project management, and quality assurance—you focus on what you do best.",
     cta: "Become a Partner",
     benefits: {
       grow: {
@@ -203,7 +203,7 @@ export const en = {
   // Register Page
   register: {
     title: "Create an account",
-    subtitle: "Get started with Fabrishare today",
+    subtitle: "Get started with Thaqeb today",
     iNeedParts: "I need parts",
     imWorkshop: "I'm a workshop",
     fullNamePlaceholder: "Ahmed Hassan",
@@ -217,7 +217,7 @@ export const en = {
     privacyLink: "Privacy Policy",
     hasAccount: "Already have an account?",
     brandTitle: "Join Egypt's Manufacturing Revolution",
-    brandSubtitle: "Whether you need parts manufactured or want to grow your workshop's business, Fabrishare is your gateway to the future of manufacturing.",
+    brandSubtitle: "Whether you need parts manufactured or want to grow your workshop's business, Thaqeb is your gateway to the future of manufacturing.",
     benefits: {
       workshops: "Access to 100+ certified workshops",
       quality: "Quality-assured manufacturing",

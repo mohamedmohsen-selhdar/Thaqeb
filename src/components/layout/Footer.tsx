@@ -79,7 +79,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>info@fabrishare.com</span>
+                <span>info@thaqeb.com</span>
               </li>
             </ul>
           </div>
@@ -87,7 +87,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Fabrishare. {t.footer.allRightsReserved}
+            © {new Date().getFullYear()} Thaqeb. {t.footer.allRightsReserved}
           </p>
           <div className="flex gap-6">
             <span className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-default">

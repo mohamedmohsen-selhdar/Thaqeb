@@ -82,7 +82,7 @@ export function useSupplierRegistration() {
         console.error("Profile update error:", profileError);
       }
 
-      toast.success("Account created successfully! Welcome to Fabrishare.");
+      toast.success("Account created successfully! Welcome to Thaqeb.");
       return { success: true };
     } catch (error) {
       console.error("Registration error:", error);

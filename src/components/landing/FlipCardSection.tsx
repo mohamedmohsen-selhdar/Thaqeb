@@ -33,7 +33,7 @@ const FlipCardSection = () => {
             <div className="container mx-auto px-4 md:px-8 max-w-7xl">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
-                        The Fabrishare Edge
+                        The Thaqeb Edge
                     </h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
                         Beyond just matching you with a CNC machine, we embed quality assurance, logistics, and speed directly into your supply chain.
