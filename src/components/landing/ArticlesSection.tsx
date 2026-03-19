@@ -79,7 +79,11 @@ const ArticlesSection = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {articles.map((article) => (
-                        <div key={article.id} className="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+                        <Link 
+                            to={`/article/${article.id}`} 
+                            key={article.id} 
+                            className="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors block"
+                        >
                             {article.coverImage && (
                                 <div className="h-48 overflow-hidden">
                                     <img 
@@ -105,7 +109,7 @@ const ArticlesSection = () => {
                                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

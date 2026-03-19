@@ -23,6 +23,7 @@ import Careers from "./pages/Careers";
 import OurServices from "./pages/OurServices";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
+import ArticleView from "./pages/ArticleView";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
                 {/* Custom localstorage Admin CMS */}
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/admin/content" element={<AdminDashboard />} />
+                <Route path="/article/:id" element={<ArticleView />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
