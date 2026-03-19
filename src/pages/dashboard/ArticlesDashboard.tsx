@@ -45,16 +45,17 @@ export default function ArticlesDashboard() {
     };
   }, [activeTab]);
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login");
+  const checkUser = () => {
+    const authStatus = localStorage.getItem("thaqeb_admin_auth");
+    if (!authStatus) {
+      navigate("/admin");
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
+  const handleLogout = () => {
+    localStorage.removeItem("thaqeb_admin_auth");
+    localStorage.removeItem("thaqeb_admin_email");
+    navigate("/admin");
   };
 
   const fetchItems = async () => {

@@ -21,6 +21,8 @@ import AuthCallback from "./pages/AuthCallback";
 import CaseStudies from "./pages/CaseStudies";
 import Careers from "./pages/Careers";
 import OurServices from "./pages/OurServices";
+import AdminLogin from "./pages/admin/Login";
+import AdminDashboard from "./pages/admin/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -57,11 +59,10 @@ const App = () => (
                     <OperationsDashboard />
                   </ProtectedRoute>
                 } />
-                <Route path="/admin/content" element={
-                  <ProtectedRoute allowedRoles={['internal_ops', 'admin']}>
-                    <ArticlesDashboard />
-                  </ProtectedRoute>
-                } />
+                
+                {/* Custom localstorage Admin CMS */}
+                <Route path="/admin" element={<AdminLogin />} />
+                <Route path="/admin/content" element={<AdminDashboard />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

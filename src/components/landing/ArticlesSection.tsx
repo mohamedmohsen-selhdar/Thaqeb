@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen } from "lucide-react";
 
@@ -7,8 +6,8 @@ type Article = {
   id: string;
   title: string;
   excerpt: string;
-  cover_image: string;
-  created_at: string;
+  coverImage?: string;
+  date: string;
 };
 
 const ArticlesSection = () => {
@@ -16,16 +15,17 @@ const ArticlesSection = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchArticles = async () => {
-            const { data, error } = await supabase
-                .from('articles' as any)
-                .select('*')
-                .eq('published', true)
-                .order('created_at', { ascending: false })
-                .limit(3);
-            
-            if (data && !error) {
-                setArticles(data as any[]);
+        const fetchArticles = () => {
+            try {
+                const localData = localStorage.getItem('thaqeb_articles');
+                if (localData) {
+                    const parsed = JSON.parse(localData);
+                    // Filter published and keep only first 3
+                    const publishedOnly = parsed.filter((a: any) => a.published).slice(0, 3);
+                    setArticles(publishedOnly);
+                }
+            } catch (error) {
+                console.error("Error parsing local articles", error);
             }
             setLoading(false);
         };
@@ -57,10 +57,10 @@ const ArticlesSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {articles.map((article) => (
                         <div key={article.id} className="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
-                            {article.cover_image && (
+                            {article.coverImage && (
                                 <div className="h-48 overflow-hidden">
                                     <img 
-                                        src={article.cover_image} 
+                                        src={article.coverImage} 
                                         alt={article.title} 
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
