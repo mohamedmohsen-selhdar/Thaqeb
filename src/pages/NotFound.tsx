@@ -24,7 +24,7 @@ const NotFound = () => {
             <Factory className="h-6 w-6 text-primary-foreground" />
           </div>
           <span className="font-display text-2xl font-bold text-foreground">
-            Fabri<span className="text-primary">share</span>
+            Tha<span className="text-primary">qeb</span>
           </span>
         </Link>
 

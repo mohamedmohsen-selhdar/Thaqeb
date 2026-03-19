@@ -176,7 +176,7 @@ const GetQuote = () => {
               <Factory className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display text-xl font-bold text-foreground">
-              Fabri<span className="text-primary">share</span>
+              Tha<span className="text-primary">qeb</span>
             </span>
           </Link>
 

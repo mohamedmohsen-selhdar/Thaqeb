@@ -41,11 +41,11 @@ const Navbar = () => {
       >
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-pill bg-primary shadow-glow transition-all group-hover:shadow-glow-strong">
+          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-pill bg-primary shadow-glow transition-all group-hover:shadow-glow-strong shrink-0">
               <Settings className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className={`font-display text-xl font-bold transition-colors ${scrolled ? "text-foreground" : "text-white"}`}>
+            <span className={`font-display text-xl font-bold transition-colors whitespace-nowrap overflow-visible ${scrolled ? "text-foreground" : "text-white"}`}>
               Tha<span className="text-primary italic">qeb</span>
             </span>
           </Link>

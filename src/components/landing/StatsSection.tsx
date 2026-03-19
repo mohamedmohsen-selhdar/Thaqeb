@@ -1,4 +1,45 @@
 import { Button } from "@/components/ui/button";
+import { useEffect, useState, useRef } from "react";
+
+const AnimatedNumber = ({ end, suffix = "" }: { end: number, suffix?: string }) => {
+    const [count, setCount] = useState(0);
+    const ref = useRef<HTMLSpanElement>(null);
+
+    useEffect(() => {
+        const duration = 2500;
+        let startTime: number | null = null;
+        
+        let observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    const step = (timestamp: number) => {
+                        if (!startTime) startTime = timestamp;
+                        const progress = Math.min((timestamp - startTime) / duration, 1);
+                        const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                        setCount(Math.floor(easeProgress * end));
+                        
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        } else {
+                            setCount(end);
+                        }
+                    };
+                    window.requestAnimationFrame(step);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (ref.current) {
+            observer.observe(ref.current);
+        }
+
+        return () => observer.disconnect();
+    }, [end]);
+
+    return <span ref={ref}>{count}{suffix}</span>;
+}
 
 const StatsSection = () => {
     return (
@@ -23,7 +64,9 @@ const StatsSection = () => {
                             <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-500/10">
                                 <div className="w-2.5 h-2.5 rounded-full bg-[#f43f5e]"></div>
                             </div>
-                            <span className="text-6xl md:text-7xl lg:text-8xl font-sans font-medium tracking-tighter text-white">2500+</span>
+                            <span className="text-6xl md:text-7xl lg:text-8xl font-sans font-medium tracking-tighter text-white">
+                                <AnimatedNumber end={2500} suffix="+" />
+                            </span>
                         </div>
                         <p className="text-xl md:text-2xl text-zinc-400">Parts Fabricated</p>
                     </div>
@@ -34,7 +77,9 @@ const StatsSection = () => {
                             <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-lime-500/10">
                                 <div className="w-2.5 h-2.5 rounded-full bg-[#a3e635]"></div>
                             </div>
-                            <span className="text-6xl md:text-7xl lg:text-8xl font-sans font-medium tracking-tighter text-white">112+</span>
+                            <span className="text-6xl md:text-7xl lg:text-8xl font-sans font-medium tracking-tighter text-white">
+                                <AnimatedNumber end={112} suffix="+" />
+                            </span>
                         </div>
                         <p className="text-xl md:text-2xl text-zinc-400">Clients Served</p>
                     </div>
@@ -45,7 +90,9 @@ const StatsSection = () => {
                             <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/10">
                                 <div className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></div>
                             </div>
-                            <span className="text-6xl md:text-7xl lg:text-8xl font-sans font-medium tracking-tighter text-white">97+</span>
+                            <span className="text-6xl md:text-7xl lg:text-8xl font-sans font-medium tracking-tighter text-white">
+                                <AnimatedNumber end={97} suffix="+" />
+                            </span>
                         </div>
                         <p className="text-xl md:text-2xl text-zinc-400">Workshops Network</p>
                     </div>
