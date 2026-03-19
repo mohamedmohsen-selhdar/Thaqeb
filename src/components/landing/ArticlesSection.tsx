@@ -36,8 +36,31 @@ const ArticlesSection = () => {
         return <div className="py-24 bg-zinc-950 flex justify-center items-center h-64"><div className="animate-pulse w-10 h-10 bg-zinc-800 rounded-full"></div></div>;
     }
 
+    // Render empty state if there are no articles instead of hiding entirely
     if (articles.length === 0) {
-        return null;
+        return (
+            <section className="py-24 bg-zinc-950 border-t border-zinc-900">
+                <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+                    <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
+                        <div>
+                            <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
+                                Industry Insights
+                            </h2>
+                            <p className="text-zinc-400 max-w-2xl text-lg">
+                                Latest articles, guides, and trends from the manufacturing ecosystem.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="text-center py-16 bg-zinc-900/50 rounded-2xl border border-zinc-800/50 border-dashed">
+                        <BookOpen className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold text-white mb-2">No Articles Yet</h3>
+                        <p className="text-zinc-400 max-w-md mx-auto">
+                            We are currently cooking up some great insights. Check back soon for industry news and guides.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        );
     }
 
     return (
